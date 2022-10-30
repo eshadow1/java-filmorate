@@ -22,9 +22,9 @@ public class FilmController {
 
     @PostMapping("/films")
     public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
-        log.info("Получен запрос на добавление.");
+        log.info("Получен запрос на добавление фильма.");
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(filmServer.addFilm(film));
+            return ResponseEntity.status(HttpStatus.CREATED).body(filmServer.addFilm(film));
         } catch (ValidationException error) {
             log.warn(error.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(film);
