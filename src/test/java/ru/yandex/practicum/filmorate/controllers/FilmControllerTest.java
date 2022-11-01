@@ -18,9 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class FilmControllerTest {
-    private static String jsonIncorrectFilmDate;
     private static String jsonCorrectFilmDate;
-    private static String jsonUpdateFilm;
     private static String endpoint;
     @Autowired
     private MockMvc mockMvc;
@@ -28,22 +26,10 @@ class FilmControllerTest {
     @BeforeAll
     public static void beforeAll() {
         endpoint = "/films";
-        jsonIncorrectFilmDate = "{" +
-                "  \"name\": \"Name\"," +
-                "  \"description\": \"Description\"," +
-                "  \"releaseDate\": \"1890-03-25\"," +
-                "  \"duration\": 200" +
-                "}";
+
         jsonCorrectFilmDate = "{" +
                 "\"name\": \"nisi eiusmod\"," +
                 "\"description\": \"adipisicing\"," +
-                "\"releaseDate\": \"1967-03-25\"," +
-                "\"duration\": 100" +
-                "}";
-        jsonUpdateFilm = "{" +
-                "\"id\": 1," +
-                "\"name\": \"nisi eiusmod\"," +
-                "\"description\": \"adipisicingUpdate\"," +
                 "\"releaseDate\": \"1967-03-25\"," +
                 "\"duration\": 100" +
                 "}";
@@ -62,8 +48,33 @@ class FilmControllerTest {
     }
 
     @Test
+    void addFailDateFilm() {
+        try {
+            String jsonFailFilmDate = "{" +
+                    "  \"name\": \"Name\"," +
+                    "  \"description\": \"Description\"," +
+                    "  \"releaseDate\": \"1890-03-25\"," +
+                    "  \"duration\": 200" +
+                    "}";
+            mockMvc.perform(post(endpoint)
+                    .content(jsonFailFilmDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isBadRequest());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     void addIncorrectFilm() {
         try {
+            String jsonIncorrectFilmDate = "{" +
+                    "  \"test\": \"Name\"," +
+                    "  \"second\": \"Description\"," +
+                    "  \"release\": \"1990-03-25\"," +
+                    "  \"durations\": 200" +
+                    "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonIncorrectFilmDate)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +85,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void addFailNameUser() {
+    void addFailNameFilm() {
         try {
             String jsonUser = "{" +
                     "\"name\": \"\"," +
@@ -92,7 +103,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void addFailDescriptionUser() {
+    void addFailDescriptionFilm() {
         try {
             String jsonUser = "{" +
                     "\"name\": \"Film name\"," +
@@ -112,7 +123,7 @@ class FilmControllerTest {
     }
 
     @Test
-    void addFailDurationUser() {
+    void addFailDurationFilm() {
         try {
             String jsonUser = "{\n" +
                     "  \"name\": \"Name\",\n" +
@@ -137,11 +148,44 @@ class FilmControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isCreated());
 
+            String jsonUpdateFilm = "{" +
+                    "\"id\": 1," +
+                    "\"name\": \"nisi eiusmod\"," +
+                    "\"description\": \"adipisicingUpdate\"," +
+                    "\"releaseDate\": \"1967-03-25\"," +
+                    "\"duration\": 100" +
+                    "}";
+
             mockMvc.perform(put(endpoint)
                             .content(jsonUpdateFilm)
                             .contentType(MediaType.APPLICATION_JSON)
                     ).andExpect(status().isOk())
                     .andExpect(jsonPath("$.description").value("adipisicingUpdate"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void updateNotFoundFilm() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectFilmDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            String jsonUpdateFilm = "{" +
+                    "\"id\": 2," +
+                    "\"name\": \"nisi eiusmod\"," +
+                    "\"description\": \"adipisicingUpdate\"," +
+                    "\"releaseDate\": \"1967-03-25\"," +
+                    "\"duration\": 100" +
+                    "}";
+
+            mockMvc.perform(put(endpoint)
+                            .content(jsonUpdateFilm)
+                            .contentType(MediaType.APPLICATION_JSON)
+                    ).andExpect(status().isNotFound());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

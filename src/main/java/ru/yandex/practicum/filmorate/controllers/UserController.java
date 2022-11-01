@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.server.UserServer;
 
@@ -24,12 +23,7 @@ public class UserController {
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         log.info("Получен запрос на добавление пользователя.");
 
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(userServer.addUser(user));
-        } catch (ValidationException error) {
-            log.warn(error.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(user);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(userServer.addUser(user));
     }
 
     @PutMapping("/users")
@@ -40,16 +34,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
         }
 
-        try {
-            userServer.updateUser(user);
-        } catch (ValidationException error) {
-            log.warn(error.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(user);
-        }
-
+        userServer.updateUser(user);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
-
 
     @GetMapping("/users")
     public List<User> getUsers() {

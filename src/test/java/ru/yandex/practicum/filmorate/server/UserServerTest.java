@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.server;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 
 import java.time.LocalDate;
@@ -13,14 +12,12 @@ class UserServerTest {
     private UserServer userServer;
     private User correctUser;
     private User nullNameUser;
-    private User incorrectUser;
     private User updateUser;
 
     @BeforeEach
     public void beforeEach() {
         userServer = new UserServer();
         LocalDate localDate = LocalDate.of(2000, 3, 25);
-        LocalDate localDateIncorrect = LocalDate.of(2050, 3, 25);
         correctUser = User.builder()
                 .id(0)
                 .name("Nick Name")
@@ -39,12 +36,6 @@ class UserServerTest {
                 .email("mail@mail.ru")
                 .login("dolore")
                 .birthday(localDate).build();
-        incorrectUser = User.builder()
-                .id(0)
-                .name("Nick Name")
-                .email("mail@mail.ru")
-                .login("dolore")
-                .birthday(localDateIncorrect).build();
     }
 
     @Test
@@ -56,15 +47,6 @@ class UserServerTest {
     void addNullNameUser() {
         userServer.addUser(nullNameUser);
         assertEquals("dolore", userServer.getAllUsers().get(0).getName());
-    }
-
-    @Test
-    void addIncorrectUser() {
-        final ValidationException exception = assertThrows(
-                ValidationException.class,
-                () -> userServer.addUser(incorrectUser));
-
-        assertEquals("Некорректная дата дня рождения", exception.getMessage());
     }
 
     @Test

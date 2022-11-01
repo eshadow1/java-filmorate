@@ -26,4 +26,9 @@ class GeneratorIdTest {
         assertEquals(newStartPosition, generatorId.getId());
     }
 
+    @Test
+    void setDefaultStartPosition() {
+        generatorId.setStartPosition(GeneratorId.START_GENERATOR);
+        assertEquals(GeneratorId.START_GENERATOR, generatorId.getId());
+    }
 }

@@ -39,13 +39,7 @@ public class FilmController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(film);
         }
 
-        try {
-            filmServer.updateFilm(film);
-        } catch (ValidationException error) {
-            log.warn(error.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(film);
-        }
-
+        filmServer.updateFilm(film);
         return ResponseEntity.status(HttpStatus.OK).body(film);
     }
 

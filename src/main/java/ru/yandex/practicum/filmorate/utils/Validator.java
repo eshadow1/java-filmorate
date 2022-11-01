@@ -8,11 +8,7 @@ public class Validator {
     private Validator() {
     }
 
-    public static boolean validDateFilm(LocalDate localDate) {
+    public static boolean isValidDateFilm(LocalDate localDate) {
         return DATE_EARLY.isBefore(localDate);
-    }
-
-    public static boolean validFeatureDate(LocalDate localDate) {
-        return LocalDate.now().isAfter(localDate);
     }
 }

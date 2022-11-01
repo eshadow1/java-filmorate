@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 import ru.yandex.practicum.filmorate.utils.Validator;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,26 +21,31 @@ public class FilmServer {
     }
 
     public Film addFilm(Film film) {
-        if (!Validator.validDateFilm(film.getReleaseDate())) {
-            throw new ValidationException("Некорректная дата выхода фильма");
-        }
+        validateReleaseDateFilm(film.getReleaseDate());
+
         Film creatingFilm = film.toBuilder().id(generatorId.getId()).build();
         films.put(creatingFilm.getId(), creatingFilm);
         return creatingFilm;
     }
 
     public boolean contains(Film film) {
-        if (!Validator.validDateFilm(film.getReleaseDate())) {
-            throw new ValidationException("Некорректная дата выхода фильма");
-        }
         return films.containsKey(film.getId());
     }
 
-    public Film updateFilm(Film film) {
-        return films.replace(film.getId(), film);
+    public void updateFilm(Film film) {
+        films.put(film.getId(), film);
     }
 
     public List<Film> getAllFilms() {
         return new ArrayList<>(films.values());
+    }
+
+    private void validateReleaseDateFilm(LocalDate releaseDateFilm) {
+        if (releaseDateFilm == null) {
+            throw new ValidationException("Некорректная дата выхода фильма");
+        }
+        if (!Validator.isValidDateFilm(releaseDateFilm)) {
+            throw new ValidationException("Некорректная дата выхода фильма");
+        }
     }
 }

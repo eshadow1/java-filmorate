@@ -18,9 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
-    private static String jsonIncorrectUserDate;
     private static String jsonCorrectUserDate;
-    private static String jsonUpdateUser;
     private static String endpoint;
     @Autowired
     private MockMvc mockMvc;
@@ -28,22 +26,10 @@ class UserControllerTest {
     @BeforeAll
     public static void beforeAll() {
         endpoint = "/users";
-        jsonIncorrectUserDate = "{" +
-                "  \"login\": \"dolore\"," +
-                "  \"name\": \"Nick Name\"," +
-                "  \"email\": \"mail@mail.ru\"," +
-                "  \"birthday\": \"2050-08-20\"" +
-                "}";
+
         jsonCorrectUserDate = "{" +
                 "  \"login\": \"dolore\"," +
                 "  \"name\": \"Nick Name\"," +
-                "  \"email\": \"mail@mail.ru\"," +
-                "  \"birthday\": \"1946-08-20\"" +
-                "}";
-        jsonUpdateUser = "{" +
-                "  \"id\": 1," +
-                "  \"login\": \"dolore\"," +
-                "  \"name\": \"Nick\"," +
                 "  \"email\": \"mail@mail.ru\"," +
                 "  \"birthday\": \"1946-08-20\"" +
                 "}";
@@ -62,12 +48,49 @@ class UserControllerTest {
     }
 
     @Test
-    void addFailLoginUser() {
+    void addFailBirthdayUser() {
+        try {
+            String jsonUser = "{\n" +
+                    "  \"login\": \"doloreullamco\",\n" +
+                    "  \"name\": \"Name\",\n" +
+                    "  \"email\": \"yandex@mail.ru\",\n" +
+                    "  \"birthday\": \"2446-08-20\"\n" +
+                    "}";
+            mockMvc.perform(post(endpoint)
+                    .content(jsonUser)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isBadRequest());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void addFailLoginWithSpaceUser() {
         try {
             String jsonUser = "{\n" +
                     "  \"login\": \"dolore ullamco\",\n" +
+                    "  \"name\": \"Name\",\n" +
                     "  \"email\": \"yandex@mail.ru\",\n" +
-                    "  \"birthday\": \"2446-08-20\"\n" +
+                    "  \"birthday\": \"1980-08-20\"\n" +
+                    "}";
+            mockMvc.perform(post(endpoint)
+                    .content(jsonUser)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isBadRequest());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void addFailLoginEmptyUser() {
+        try {
+            String jsonUser = "{\n" +
+                    "  \"login\": \"\",\n" +
+                    "  \"name\": \"Name\",\n" +
+                    "  \"email\": \"yandex@mail.ru\",\n" +
+                    "  \"birthday\": \"1980-08-20\"\n" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonUser)
@@ -82,8 +105,8 @@ class UserControllerTest {
     void addFailEmailUser() {
         try {
             String jsonUser = "{\n" +
-                    "  \"login\": \"dolore ullamco\",\n" +
-                    "  \"name\": \"\",\n" +
+                    "  \"login\": \"doloreullamco\",\n" +
+                    "  \"name\": \"Name\",\n" +
                     "  \"email\": \"mail.ru\",\n" +
                     "  \"birthday\": \"1980-08-20\"\n" +
                     "}";
@@ -99,6 +122,12 @@ class UserControllerTest {
     @Test
     void addIncorrectUser() {
         try {
+            String jsonIncorrectUserDate = "{" +
+                    "  \"login\": \"dolore\"," +
+                    "  \"names\": \"Nick Name\"," +
+                    "  \"test\": \"mail@mail.ru\"," +
+                    "  \"date\": \"2050-08-20\"" +
+                    "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonIncorrectUserDate)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -116,11 +145,42 @@ class UserControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isCreated());
 
+            String jsonUpdateUser = "{" +
+                    "  \"id\": 1," +
+                    "  \"login\": \"dolore\"," +
+                    "  \"name\": \"Nick\"," +
+                    "  \"email\": \"mail@mail.ru\"," +
+                    "  \"birthday\": \"1946-08-20\"" +
+                    "}";
             mockMvc.perform(put(endpoint)
                             .content(jsonUpdateUser)
                             .contentType(MediaType.APPLICATION_JSON)
                     ).andExpect(status().isOk())
                     .andExpect(jsonPath("$.name").value("Nick"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void updateNotFoundUser() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            String jsonUpdateUser = "{" +
+                    "  \"id\": 2," +
+                    "  \"login\": \"dolore\"," +
+                    "  \"name\": \"Nick\"," +
+                    "  \"email\": \"mail@mail.ru\"," +
+                    "  \"birthday\": \"1946-08-20\"" +
+                    "}";
+            mockMvc.perform(put(endpoint)
+                            .content(jsonUpdateUser)
+                            .contentType(MediaType.APPLICATION_JSON)
+                    ).andExpect(status().isNotFound());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

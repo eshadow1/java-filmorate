@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.server;
 
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
-import ru.yandex.practicum.filmorate.utils.Validator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,16 +18,9 @@ public class UserServer {
     }
 
     public User addUser(User user) {
-        if (!Validator.validFeatureDate(user.getBirthday())) {
-            throw new ValidationException("Некорректная дата дня рождения");
-        }
-        String name;
-        if (user.getName() == null || user.getName().isEmpty()) {
-            name = user.getLogin();
-        } else {
-            name = user.getName();
-        }
+        String name = getCorrectName(user);
         User creatingUser = user.toBuilder().id(generatorId.getId()).name(name).build();
+
         users.put(creatingUser.getId(), creatingUser);
         return creatingUser;
     }
@@ -38,17 +29,26 @@ public class UserServer {
         return users.containsKey(user.getId());
     }
 
-    public User updateUser(User user) {
-        if (!Validator.validFeatureDate(user.getBirthday())) {
-            throw new ValidationException("Некорректная дата дня рождения");
-        }
-        String name = user.getName().isEmpty() ? user.getLogin() : user.getName();
+    public void updateUser(User user) {
+        String name = getCorrectName(user);
         User creatingUser = user.toBuilder().name(name).build();
 
-        return users.replace(user.getId(), creatingUser);
+        users.put(user.getId(), creatingUser);
     }
 
     public List<User> getAllUsers() {
         return new ArrayList<>(users.values());
+    }
+
+    public static boolean isEmptyName(String name) {
+        return name == null || name.isEmpty();
+    }
+
+    private String getCorrectName(User user) {
+        if (isEmptyName(user.getName())) {
+            return user.getLogin();
+        }
+
+        return user.getName();
     }
 }
