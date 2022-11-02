@@ -10,8 +10,9 @@ import ru.yandex.practicum.filmorate.server.UserServer;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController
 @Slf4j
+@RestController
+@RequestMapping("/users")
 public class UserController {
     private final UserServer userServer;
 
@@ -19,16 +20,16 @@ public class UserController {
         this.userServer = new UserServer();
     }
 
-    @PostMapping("/users")
+    @PostMapping
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
-        log.info("Получен запрос на добавление пользователя.");
+        log.info("Получен запрос на добавление пользователя: " + user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userServer.addUser(user));
     }
 
-    @PutMapping("/users")
+    @PutMapping
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
-        log.info("Получен запрос на обновление пользователя " + user.getId() + ".");
+        log.info("Получен запрос на обновление пользователя " + user.getId() + ": " + user);
 
         if (!userServer.contains(user)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(user);
@@ -38,9 +39,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getUsers() {
-        log.info("Получен запрос на получение всех пользователей.");
+        log.info("Получен запрос на получение всех пользователей");
         return userServer.getAllUsers();
     }
 }

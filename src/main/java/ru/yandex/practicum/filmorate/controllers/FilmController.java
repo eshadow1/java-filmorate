@@ -11,8 +11,9 @@ import ru.yandex.practicum.filmorate.server.FilmServer;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController
 @Slf4j
+@RestController
+@RequestMapping("/films")
 public class FilmController {
     private final FilmServer filmServer;
 
@@ -20,9 +21,9 @@ public class FilmController {
         this.filmServer = new FilmServer();
     }
 
-    @PostMapping("/films")
+    @PostMapping
     public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
-        log.info("Получен запрос на добавление фильма.");
+        log.info("Получен запрос на добавление фильма: " + film);
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(filmServer.addFilm(film));
         } catch (ValidationException error) {
@@ -31,9 +32,9 @@ public class FilmController {
         }
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
-        log.info("Получен запрос на обновление фильма " + film.getId() + ".");
+        log.info("Получен запрос на обновление фильма " + film.getId() + ": " + film);
 
         if (!filmServer.contains(film)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(film);
@@ -43,9 +44,10 @@ public class FilmController {
         return ResponseEntity.status(HttpStatus.OK).body(film);
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public List<Film> getFilms() {
-        log.info("Получен запрос на получение всех фильмов.");
+        log.info("Получен запрос на получение всех фильмов");
         return filmServer.getAllFilms();
     }
 }
+

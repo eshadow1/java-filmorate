@@ -14,6 +14,7 @@ class FilmServerTest {
     private Film correctFilm;
     private Film incorrectFilm;
     private Film updateFilm;
+    private Film nullDateFilm;
 
     @BeforeEach
     public void beforeEach() {
@@ -38,6 +39,12 @@ class FilmServerTest {
                 .description("adipisicing")
                 .releaseDate(localDateIncorrect)
                 .duration(100).build();
+        nullDateFilm = Film.builder()
+                .id(0)
+                .name("nisi eiusmod")
+                .description("adipisicing")
+                .releaseDate(null)
+                .duration(100).build();
     }
 
     @Test
@@ -51,6 +58,15 @@ class FilmServerTest {
         final ValidationException exception = assertThrows(
                 ValidationException.class,
                 () -> filmServer.addFilm(incorrectFilm));
+
+        assertEquals("Некорректная дата выхода фильма", exception.getMessage());
+    }
+
+    @Test
+    void addNullDateFilm() {
+        final ValidationException exception = assertThrows(
+                ValidationException.class,
+                () -> filmServer.addFilm(nullDateFilm));
 
         assertEquals("Некорректная дата выхода фильма", exception.getMessage());
     }
