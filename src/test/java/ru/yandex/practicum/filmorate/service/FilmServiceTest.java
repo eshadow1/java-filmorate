@@ -1,16 +1,18 @@
-package ru.yandex.practicum.filmorate.server;
+package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FilmServerTest {
-    private FilmServer filmServer;
+class FilmServiceTest {
+    private FilmService filmService;
     private Film correctFilm;
     private Film incorrectFilm;
     private Film updateFilm;
@@ -18,7 +20,7 @@ class FilmServerTest {
 
     @BeforeEach
     public void beforeEach() {
-        filmServer = new FilmServer();
+        filmService = new FilmService(new InMemoryFilmStorage(), new GeneratorId());
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         LocalDate localDateIncorrect = LocalDate.of(1867, 3, 25);
         correctFilm = Film.builder()
@@ -49,15 +51,15 @@ class FilmServerTest {
 
     @Test
     void addFilm() {
-        filmServer.addFilm(correctFilm);
-        assertEquals(1, filmServer.getAllFilms().size());
+        filmService.addFilm(correctFilm);
+        assertEquals(1, filmService.getAllFilms().size());
     }
 
     @Test
     void addIncorrectFilm() {
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> filmServer.addFilm(incorrectFilm));
+                () -> filmService.addFilm(incorrectFilm));
 
         assertEquals("Некорректная дата выхода фильма", exception.getMessage());
     }
@@ -66,33 +68,33 @@ class FilmServerTest {
     void addNullDateFilm() {
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> filmServer.addFilm(nullDateFilm));
+                () -> filmService.addFilm(nullDateFilm));
 
         assertEquals("Некорректная дата выхода фильма", exception.getMessage());
     }
 
     @Test
     void containsCorrect() {
-        var film = filmServer.addFilm(correctFilm);
-        assertTrue(filmServer.contains(film));
+        var film = filmService.addFilm(correctFilm);
+        assertTrue(filmService.contains(film));
     }
 
     @Test
     void containsIncorrect() {
-        filmServer.addFilm(correctFilm);
-        assertFalse(filmServer.contains(correctFilm));
+        filmService.addFilm(correctFilm);
+        assertFalse(filmService.contains(correctFilm));
     }
 
     @Test
     void updateFilm() {
-        filmServer.addFilm(correctFilm);
-        filmServer.updateFilm(updateFilm);
-        assertEquals("adipisicingUpdate", filmServer.getAllFilms().get(0).getDescription());
+        filmService.addFilm(correctFilm);
+        filmService.updateFilm(updateFilm);
+        assertEquals("adipisicingUpdate", filmService.getAllFilms().get(0).getDescription());
     }
 
     @Test
     void getAllFilms() {
-        filmServer.addFilm(correctFilm);
-        assertEquals(1, filmServer.getAllFilms().size());
+        filmService.addFilm(correctFilm);
+        assertEquals(1, filmService.getAllFilms().size());
     }
 }

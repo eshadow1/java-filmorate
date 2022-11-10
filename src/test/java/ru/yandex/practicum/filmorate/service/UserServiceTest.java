@@ -1,22 +1,24 @@
-package ru.yandex.practicum.filmorate.server;
+package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserServerTest {
-    private UserServer userServer;
+class UserServiceTest {
+    private UserService userService;
     private User correctUser;
     private User nullNameUser;
     private User updateUser;
 
     @BeforeEach
     public void beforeEach() {
-        userServer = new UserServer();
+        userService = new UserService(new InMemoryUserStorage(), new GeneratorId());
         LocalDate localDate = LocalDate.of(2000, 3, 25);
         correctUser = User.builder()
                 .id(0)
@@ -40,37 +42,37 @@ class UserServerTest {
 
     @Test
     void addUser() {
-        userServer.addUser(correctUser);
-        assertEquals(1, userServer.getAllUsers().size());
+        userService.addUser(correctUser);
+        assertEquals(1, userService.getAllUsers().size());
     }
     @Test
     void addNullNameUser() {
-        userServer.addUser(nullNameUser);
-        assertEquals("dolore", userServer.getAllUsers().get(0).getName());
+        userService.addUser(nullNameUser);
+        assertEquals("dolore", userService.getAllUsers().get(0).getName());
     }
 
     @Test
     void containsCorrect() {
-        var film = userServer.addUser(correctUser);
-        assertTrue(userServer.contains(film));
+        var film = userService.addUser(correctUser);
+        assertTrue(userService.contains(film));
     }
 
     @Test
     void containsIncorrect() {
-        userServer.addUser(correctUser);
-        assertFalse(userServer.contains(correctUser));
+        userService.addUser(correctUser);
+        assertFalse(userService.contains(correctUser));
     }
 
     @Test
     void updateUser() {
-        userServer.addUser(correctUser);
-        userServer.updateUser(updateUser);
-        assertEquals("Nick", userServer.getAllUsers().get(0).getName());
+        userService.addUser(correctUser);
+        userService.updateUser(updateUser);
+        assertEquals("Nick", userService.getAllUsers().get(0).getName());
     }
 
     @Test
     void getAllUsers() {
-        userServer.addUser(correctUser);
-        assertEquals(1, userServer.getAllUsers().size());
+        userService.addUser(correctUser);
+        assertEquals(1, userService.getAllUsers().size());
     }
 }

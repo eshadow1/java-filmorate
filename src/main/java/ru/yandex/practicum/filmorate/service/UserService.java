@@ -1,43 +1,40 @@
-package ru.yandex.practicum.filmorate.server;
+package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class UserServer {
-    private final Map<Integer, User> users;
+@Service
+public class UserService {
+    private final UserStorage userStorage;
     private final GeneratorId generatorId;
 
-    public UserServer() {
-        this.users = new HashMap<>();
-        this.generatorId = new GeneratorId();
+    public UserService(UserStorage userStorage, GeneratorId generatorId) {
+        this.userStorage = userStorage;
+        this.generatorId = generatorId;
     }
 
     public User addUser(User user) {
         String name = getCorrectName(user);
         User creatingUser = user.toBuilder().id(generatorId.getId()).name(name).build();
-
-        users.put(creatingUser.getId(), creatingUser);
-        return creatingUser;
+        return userStorage.add(creatingUser);
     }
 
     public boolean contains(User user) {
-        return users.containsKey(user.getId());
+        return userStorage.contains(user);
     }
 
     public void updateUser(User user) {
         String name = getCorrectName(user);
         User creatingUser = user.toBuilder().name(name).build();
-
-        users.put(user.getId(), creatingUser);
+        userStorage.update(creatingUser);
     }
 
     public List<User> getAllUsers() {
-        return new ArrayList<>(users.values());
+        return userStorage.getAll();
     }
 
     public static boolean isEmptyName(String name) {

@@ -1,43 +1,43 @@
-package ru.yandex.practicum.filmorate.server;
+package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class FilmServer {
+@Service
+public class FilmService {
+
     private static final LocalDate DATE_EARLY = LocalDate.of(1895, 12, 28);
-    private final Map<Integer, Film> films;
+
+    private final FilmStorage filmStorage;
     private final GeneratorId generatorId;
 
-    public FilmServer() {
-        this.films = new HashMap<>();
-        this.generatorId = new GeneratorId();
+    public FilmService(FilmStorage filmStorage, GeneratorId generatorId) {
+        this.filmStorage = filmStorage;
+        this.generatorId = generatorId;
     }
 
     public Film addFilm(Film film) {
         validateReleaseDateFilm(film.getReleaseDate());
-
         Film creatingFilm = film.toBuilder().id(generatorId.getId()).build();
-        films.put(creatingFilm.getId(), creatingFilm);
-        return creatingFilm;
+        return filmStorage.add(creatingFilm);
     }
 
     public boolean contains(Film film) {
-        return films.containsKey(film.getId());
+        return filmStorage.contains(film);
     }
 
     public void updateFilm(Film film) {
-        films.put(film.getId(), film);
+        filmStorage.update(film);
     }
 
     public List<Film> getAllFilms() {
-        return new ArrayList<>(films.values());
+        return filmStorage.getAll();
     }
 
     private static boolean isValidDateFilm(LocalDate localDate) {
