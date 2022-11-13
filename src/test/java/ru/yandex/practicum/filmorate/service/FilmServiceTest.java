@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
@@ -97,5 +98,32 @@ class FilmServiceTest {
     void getAllFilms() {
         filmService.addFilm(correctFilm);
         assertEquals(1, filmService.getAllFilms().size());
+    }
+
+    @Test
+    void getFilm() {
+        filmService.addFilm(correctFilm);
+        assertEquals(1, filmService.getFilm(1).getId());
+    }
+
+    @Test
+    void getNoAddedFilm() {
+        assertNull(filmService.getFilm(1));
+    }
+
+    @Test
+    void addLikeNoAddedUser() {
+        filmService.addFilm(correctFilm);
+        assertThrows(
+                ContainsException.class,
+                () -> filmService.addFilmLike(1, 1));
+    }
+
+    @Test
+    void removeLikeNoAddedUser() {
+        filmService.addFilm(correctFilm);
+        assertThrows(
+                ContainsException.class,
+                () -> filmService.removeFilmLike(1, 1));
     }
 }

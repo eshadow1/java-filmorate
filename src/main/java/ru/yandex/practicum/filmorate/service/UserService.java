@@ -61,6 +61,10 @@ public class UserService {
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
+        if (!userStorage.contains(userId) || !userStorage.contains(friendId)) {
+            throw new ContainsException("Id" + userId + " пользователя не найдено");
+        }
+
         if (userStorage.haveFriend(userId)) {
             userStorage.removeFriend(userId, friendId);
         }
