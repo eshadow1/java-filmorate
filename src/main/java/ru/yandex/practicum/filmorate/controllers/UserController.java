@@ -4,11 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -39,9 +41,67 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+    @PutMapping("/{id}/friends/{friendsId}")
+    public ResponseEntity<List<User>> addUserFriend(@PathVariable int id, @PathVariable int friendsId) {
+        log.info("Получен запрос на добавление друга с id " + friendsId + " у пользователя с id" + id);
+
+        if (!userService.contains(id) || !userService.contains(friendsId)) {
+            throw new ContainsException("Id " + id + " или " + friendsId + " не найден");
+        }
+
+        userService.addFriend(id, friendsId);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getFriends(id));
+    }
+
+    @DeleteMapping("/{id}/friends/{friendsId}")
+    public ResponseEntity<List<User>> removeUserFriend(@PathVariable int id, @PathVariable int friendsId) {
+        log.info("Получен запрос на удаление друга с id " + friendsId + " у пользователя с id" + id);
+        userService.removeFriend(id, friendsId);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getFriends(id));
+    }
+
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<List<User>> getFriendsUser(@PathVariable int id) {
+        log.info("Получен запрос на получение всех друзей поользователя с id " + id);
+
+        if (!userService.contains(id)) {
+            throw new ContainsException("Id " + id + " не найден");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getFriends(id));
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public ResponseEntity<List<User>> getFriendsUserWithOtherUser(@PathVariable int id, @PathVariable int otherId) {
+        log.info("Получен запрос на получение общих друзей пользователей c id " + id + " и " + otherId);
+
+        if (!userService.contains(id) || !userService.contains(otherId)) {
+            throw new ContainsException("Id " + id + " или " + otherId + " не найден");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getCommonFriends(id, otherId));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable int id) {
+        log.info("Получен запрос на получение пользователя" + id);
+
+        if (!userService.contains(id)) {
+            throw new ContainsException("Id " + id + " не найден");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));
+    }
+
     @GetMapping
     public List<User> getUsers() {
         log.info("Получен запрос на получение всех пользователей");
         return userService.getAllUsers();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleContainsException(final ContainsException e) {
+        return Map.of("error", e.getMessage());
     }
 }
