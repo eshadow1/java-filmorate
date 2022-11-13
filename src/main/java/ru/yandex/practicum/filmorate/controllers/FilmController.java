@@ -4,12 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -37,7 +39,7 @@ public class FilmController {
     public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос на обновление фильма " + film.getId() + ": " + film);
 
-        if (!filmService.contains(film)) {
+        if (!filmService.contains(film.getId())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(film);
         }
 
@@ -45,10 +47,53 @@ public class FilmController {
         return ResponseEntity.status(HttpStatus.OK).body(film);
     }
 
+    @PutMapping("/{id}/like/{userId}")
+    public ResponseEntity<Film> addLikeFilm(@PathVariable int id, @PathVariable int userId) {
+        log.info("Получен запрос на добавления лайка фильму " + " от пользователя " + userId);
+
+        if (!filmService.contains(id)) {
+            throw new ContainsException("Id " + id + " не найден");
+        }
+
+        filmService.addFilmLike(id, userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.getFilm(id));
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public ResponseEntity<Film> removeLikeFilm(@PathVariable int id, @PathVariable int userId) {
+        log.info("Получен запрос на удаление лайка у фильма " + " от пользователя " + userId);
+        filmService.removeFilmLike(id, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.getFilm(id));
+    }
+
     @GetMapping
     public List<Film> getFilms() {
         log.info("Получен запрос на получение всех фильмов");
         return filmService.getAllFilms();
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getTopFilms(@RequestParam(defaultValue = "10") int count) {
+        log.info("Получен запрос на получение всех фильмов");
+        return filmService.getTopFilms(count);
+    }
+
+    @GetMapping("/{id}")
+    public  ResponseEntity<Film> getFilm(@PathVariable int id) {
+        log.info("Получен запрос на получение фильма " + id);
+
+        if (!filmService.contains(id)) {
+            throw new ContainsException("Id " + id + " не найден");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(filmService.getFilm(id));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleContainsException(final ContainsException e) {
+        return Map.of("error", e.getMessage());
     }
 }
 

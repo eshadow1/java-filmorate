@@ -3,29 +3,28 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users;
+    private final Map<Integer, Set<Integer>> usersFriends;
 
     public InMemoryUserStorage() {
         this.users = new HashMap<>();
+        this.usersFriends = new HashMap<>();
     }
 
     @Override
     public User add(User user) {
-
         users.put(user.getId(), user);
         return user;
     }
 
     @Override
     public User remove(User user) {
-        return null;
+        usersFriends.remove(user.getId());
+        return users.remove(user.getId());
     }
 
     @Override
@@ -40,11 +39,52 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User get(Integer idUser) {
-        return null;
+        return users.get(idUser);
     }
 
     @Override
-    public boolean contains(User user) {
-        return users.containsKey(user.getId());
+    public boolean contains(int userId) {
+        return users.containsKey(userId);
+    }
+
+    @Override
+    public boolean addFriend(Integer userId, Integer friendId) {
+        if (!usersFriends.containsKey(userId)) {
+            usersFriends.put(userId, new HashSet<>());
+        }
+        usersFriends.get(userId).add(friendId);
+        return true;
+    }
+
+    @Override
+    public void removeFriend(Integer userId, Integer friendId) {
+        usersFriends.get(userId).remove(friendId);
+    }
+
+    @Override
+    public boolean haveFriend(Integer userId) {
+        if (!usersFriends.containsKey(userId)) {
+            return false;
+        }
+        return !usersFriends.get(userId).isEmpty();
+    }
+
+    @Override
+    public List<User> getFriends(Integer userId) {
+        List<User> friends = new ArrayList<>();
+        if (!usersFriends.containsKey(userId)) {
+            return new ArrayList<>();
+        }
+        usersFriends.get(userId).forEach(idFriend -> {
+            if (users.containsKey(idFriend)) {
+                friends.add(users.get(idFriend));
+            } else {
+                friends.add(User.builder()
+                        .id(idFriend)
+                        .login("removeUser")
+                        .name("removeUser").build());
+            }
+        });
+        return friends;
     }
 }

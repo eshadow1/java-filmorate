@@ -4,11 +4,11 @@ import ru.yandex.practicum.filmorate.models.Film;
 
 import java.util.List;
 
-public interface FilmStorage {
+public interface FilmStorage extends FilmLikesStorage {
     Film add(Film film);
     Film remove(Film film);
     Film update(Film film);
     List<Film> getAll();
-    Film get(Integer idFilm);
-    boolean contains(Film film);
+    Film get(int idFilm);
+    boolean contains(int idFilm);
 }

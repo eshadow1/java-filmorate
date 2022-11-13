@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
@@ -20,7 +21,7 @@ class FilmServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        filmService = new FilmService(new InMemoryFilmStorage(), new GeneratorId());
+        filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage(), new GeneratorId());
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         LocalDate localDateIncorrect = LocalDate.of(1867, 3, 25);
         correctFilm = Film.builder()
@@ -76,13 +77,13 @@ class FilmServiceTest {
     @Test
     void containsCorrect() {
         var film = filmService.addFilm(correctFilm);
-        assertTrue(filmService.contains(film));
+        assertTrue(filmService.contains(film.getId()));
     }
 
     @Test
     void containsIncorrect() {
         filmService.addFilm(correctFilm);
-        assertFalse(filmService.contains(correctFilm));
+        assertFalse(filmService.contains(correctFilm.getId()));
     }
 
     @Test
