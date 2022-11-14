@@ -146,6 +146,15 @@ class UserServiceTest {
     }
 
     @Test
+    void getCommonUnknownFriend() {
+        userService.addUser(correctUser);
+        userService.addUser(correctUser2);
+        assertThrows(
+                ContainsException.class,
+                () -> userService.getCommonFriends(1, 4));
+    }
+
+    @Test
     void addNotUserFriend() {
         userService.addUser(correctUser);
         assertThrows(

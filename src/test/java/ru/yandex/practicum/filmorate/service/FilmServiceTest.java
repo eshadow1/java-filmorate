@@ -5,8 +5,10 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
@@ -15,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmServiceTest {
     private FilmService filmService;
+    private UserStorage userStorage;
     private Film correctFilm;
     private Film incorrectFilm;
     private Film updateFilm;
@@ -22,7 +25,8 @@ class FilmServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage(), new GeneratorId());
+        userStorage = new InMemoryUserStorage();
+        filmService = new FilmService(new InMemoryFilmStorage(), userStorage, new GeneratorId());
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         LocalDate localDateIncorrect = LocalDate.of(1867, 3, 25);
         correctFilm = Film.builder()
@@ -107,6 +111,12 @@ class FilmServiceTest {
     }
 
     @Test
+    void getTopFilm() {
+        filmService.addFilm(correctFilm);
+        assertEquals(1, filmService.getTopFilms(1).size());
+    }
+
+    @Test
     void getNoAddedFilm() {
         assertNull(filmService.getFilm(1));
     }
@@ -117,6 +127,28 @@ class FilmServiceTest {
         assertThrows(
                 ContainsException.class,
                 () -> filmService.addFilmLike(1, 1));
+    }
+
+    @Test
+    void addLikeUser() {
+        LocalDate localDate = LocalDate.of(2000, 3, 25);
+        userStorage.add(User.builder()
+                .id(1)
+                .name("Nick Name")
+                .email("mail@mail.ru")
+                .login("dolore")
+                .birthday(localDate).build());
+        filmService.addFilm(correctFilm);
+        int idFilm2 = 2;
+        var correctFilm2 = Film.builder()
+                .id(idFilm2)
+                .name("nisi eiusmod")
+                .description("adipisicing")
+                .releaseDate(localDate)
+                .duration(180).build();
+        filmService.addFilm(correctFilm2);
+        filmService.addFilmLike(1, 1);
+        assertEquals(1, filmService.getTopFilms(1).get(0).getId());
     }
 
     @Test
