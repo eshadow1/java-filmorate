@@ -31,7 +31,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film update(Film film){
+    public Film update(Film film) {
         return films.put(film.getId(), film);
     }
 
@@ -51,15 +51,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addLikeFilm(int filmId, int userId) {
-        if (!filmLikes.containsKey(filmId)) {
-            throw new ContainsException("Id " + filmId + " не найден");
-        }
+    public void addFilmLike(int filmId, int userId) {
+        checkedFilmLikesContains(filmId);
+
         filmLikes.get(filmId).add(userId);
     }
 
     @Override
-    public void removeLikeFilm(int filmId, int userId) {
+    public void removeFilmLike(int filmId, int userId) {
         if (filmLikes.containsKey(filmId)) {
             filmLikes.get(filmId).remove(userId);
         }
@@ -68,7 +67,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getFilmsWithLikes() {
         return filmLikes.entrySet().stream()
-                .sorted((a,b) -> b.getValue().size() - a.getValue().size())
+                .sorted((a, b) -> b.getValue().size() - a.getValue().size())
                 .map(a -> films.get(a.getKey())).collect(Collectors.toList());
+    }
+
+    private void checkedFilmLikesContains(int id) {
+        if (!filmLikes.containsKey(id)) {
+            throw new ContainsException("Фильм с Id " + id + " не найден");
+        }
     }
 }

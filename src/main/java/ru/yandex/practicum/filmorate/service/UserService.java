@@ -6,9 +6,8 @@ import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -35,15 +34,16 @@ public class UserService {
     }
 
     public void updateUser(User user) {
+        checkedUserContains(user.getId());
+
         String name = getCorrectName(user);
         User creatingUser = user.toBuilder().name(name).build();
         userStorage.update(creatingUser);
     }
 
     public User getUser(int userId) {
-        if(!userStorage.contains(userId)) {
-            throw new ContainsException("Id" + userId + " пользователя не найдено");
-        }
+        checkedUserContains(userId);
+
         return userStorage.get(userId);
     }
 
@@ -53,17 +53,16 @@ public class UserService {
     }
 
     public void addFriend(Integer userId, Integer friendId) {
-        if (!userStorage.contains(userId) || !userStorage.contains(friendId)) {
-            throw new ContainsException("Id" + userId + " пользователя не найдено");
-        }
+        checkedUserContains(userId);
+        checkedUserContains(friendId);
+
         userStorage.addFriend(userId, friendId);
         userStorage.addFriend(friendId, userId);
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
-        if (!userStorage.contains(userId) || !userStorage.contains(friendId)) {
-            throw new ContainsException("Id" + userId + " пользователя не найдено");
-        }
+        checkedUserContains(userId);
+        checkedUserContains(friendId);
 
         if (userStorage.haveFriend(userId)) {
             userStorage.removeFriend(userId, friendId);
@@ -75,25 +74,22 @@ public class UserService {
     }
 
     public List<User> getFriends(Integer userId) {
-        if(!userStorage.contains(userId)) {
-            throw new ContainsException("Id" + userId + " пользователя не найдено");
-        }
+        checkedUserContains(userId);
 
         return userStorage.getFriends(userId);
     }
 
     public List<User> getCommonFriends(Integer userId, Integer otherId) {
-        if(!userStorage.contains(userId) || !userStorage.contains(otherId)) {
-            throw new ContainsException("Id пользователей не найдено");
-        }
+        checkedUserContains(userId);
+        checkedUserContains(otherId);
 
         var userFriends = userStorage.getFriends(userId);
-        var otherFriends = userStorage.getFriends(otherId);
-        userFriends.addAll(otherFriends);
-        var temp = new HashSet<>(userFriends);
-        temp.remove(userStorage.get(userId));
-        temp.remove(userStorage.get(otherId));
-        return new ArrayList<>(temp);
+        userFriends.addAll(userStorage.getFriends(otherId));
+
+        return userFriends.stream()
+                .distinct()
+                .filter(user -> (user.getId() != userId && user.getId() != otherId))
+                .collect(Collectors.toList());
     }
 
     public static boolean isEmptyName(String name) {
@@ -108,5 +104,9 @@ public class UserService {
         return user.getName();
     }
 
-
+    private void checkedUserContains(int id) {
+        if (!userStorage.contains(id)) {
+            throw new ContainsException("Пользователь с id " + id + " не найден");
+        }
+    }
 }

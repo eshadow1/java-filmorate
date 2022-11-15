@@ -36,6 +36,8 @@ public class FilmService {
     }
 
     public void updateFilm(Film film) {
+        checkedFilmContains(film.getId());
+
         filmStorage.update(film);
     }
 
@@ -44,26 +46,22 @@ public class FilmService {
     }
 
     public Film getFilm(int filmId) {
-        if (!filmStorage.contains(filmId)) {
-            return null;
-        }
+        checkedFilmContains(filmId);
+
         return filmStorage.get(filmId);
     }
 
     public void addFilmLike(int id, int userId) {
-        if (!userStorage.contains(userId)) {
-            throw new ContainsException("Пользователя с Id " + userId + " не существует");
-        }
+        checkedFilmContains(id);
+        checkedUserContains(userId);
 
-        filmStorage.addLikeFilm(id, userId);
+        filmStorage.addFilmLike(id, userId);
     }
 
     public void removeFilmLike(int id, int userId) {
-        if (!userStorage.contains(userId)) {
-            throw new ContainsException("Пользователя с Id " + userId + " не существует");
-        }
+        checkedUserContains(userId);
 
-        filmStorage.removeLikeFilm(id, userId);
+        filmStorage.removeFilmLike(id, userId);
     }
 
     public List<Film> getTopFilms(int count) {
@@ -77,6 +75,18 @@ public class FilmService {
     private void validateReleaseDateFilm(LocalDate releaseDateFilm) {
         if (releaseDateFilm == null || !isValidDateFilm(releaseDateFilm)) {
             throw new ValidationException("Некорректная дата выхода фильма");
+        }
+    }
+
+    private void checkedFilmContains(int id) {
+        if (!filmStorage.contains(id)) {
+            throw new ContainsException("Фильм с id " + id + " не найден");
+        }
+    }
+
+    private void checkedUserContains(int userId) {
+        if (!userStorage.contains(userId)) {
+            throw new ContainsException("Пользователя с Id " + userId + " не существует.");
         }
     }
 }

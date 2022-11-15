@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -71,20 +72,16 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getFriends(Integer userId) {
-        List<User> friends = new ArrayList<>();
         if (!usersFriends.containsKey(userId)) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
-        usersFriends.get(userId).forEach(idFriend -> {
-            if (users.containsKey(idFriend)) {
-                friends.add(users.get(idFriend));
-            } else {
-                friends.add(User.builder()
-                        .id(idFriend)
-                        .login("removeUser")
-                        .name("removeUser").build());
-            }
-        });
-        return friends;
+
+        return usersFriends.get(userId).stream().map(id ->
+                users.containsKey(id) ? users.get(id) :
+                        User.builder()
+                                .id(id)
+                                .login("removeUser")
+                                .name("removeUser").build()
+        ).collect(Collectors.toList());
     }
 }

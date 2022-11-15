@@ -118,7 +118,9 @@ class FilmServiceTest {
 
     @Test
     void getNoAddedFilm() {
-        assertNull(filmService.getFilm(1));
+        assertThrows(
+                ContainsException.class,
+                () -> filmService.getFilm(1));
     }
 
     @Test

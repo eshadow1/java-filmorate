@@ -74,7 +74,7 @@ class InMemoryFilmStorageTest {
         filmStorage.add(correctFilm2);
 
         int idUser = 2;
-        filmStorage.addLikeFilm(idFilm2, idUser);
+        filmStorage.addFilmLike(idFilm2, idUser);
         assertEquals(idFilm2, filmStorage.getFilmsWithLikes().get(0).getId());
     }
 
@@ -92,8 +92,8 @@ class InMemoryFilmStorageTest {
         filmStorage.add(correctFilm2);
 
         int idUser = 2;
-        filmStorage.addLikeFilm(idFilm2, idUser);
-        filmStorage.removeLikeFilm(idFilm2, idUser);
+        filmStorage.addFilmLike(idFilm2, idUser);
+        filmStorage.removeFilmLike(idFilm2, idUser);
         assertEquals(idFilm, filmStorage.getFilmsWithLikes().get(0).getId());
     }
 }
