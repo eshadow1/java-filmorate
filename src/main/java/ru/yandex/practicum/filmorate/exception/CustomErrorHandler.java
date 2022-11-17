@@ -14,13 +14,13 @@ public class CustomErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleContainsException(final ContainsException e) {
-        return Map.of("error", e.getMessage());
+    public Map<String, String> handleContainsException(final ContainsException error) {
+        return Map.of("error", HttpStatus.NOT_FOUND + ": " + error.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationException(final ValidationException e) {
-        return Map.of("error", e.getMessage());
+    public Map<String, String> handleValidationException(final ValidationException error) {
+        return Map.of("error", HttpStatus.BAD_REQUEST + ": " + error.getMessage());
     }
 }

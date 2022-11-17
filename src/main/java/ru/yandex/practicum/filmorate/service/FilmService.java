@@ -65,7 +65,7 @@ public class FilmService {
     }
 
     public List<Film> getTopFilms(int count) {
-        return filmStorage.getFilmsWithLikes().stream().limit(count).collect(Collectors.toList());
+        return filmStorage.getFilmsSortedByLikes().stream().limit(count).collect(Collectors.toList());
     }
 
     private static boolean isValidDateFilm(LocalDate localDate) {

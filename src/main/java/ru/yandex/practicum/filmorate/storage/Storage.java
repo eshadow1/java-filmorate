@@ -11,7 +11,7 @@ public interface Storage<T> {
 
     List<T> getAll();
 
-    T get(Integer objectId);
+    T get(int objectId);
 
     boolean contains(int objectId);
 }

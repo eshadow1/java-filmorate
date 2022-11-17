@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,11 +65,11 @@ public class UserService {
         checkedUserContains(userId);
         checkedUserContains(friendId);
 
-        if (userStorage.haveFriend(userId)) {
+        if (userStorage.haveFriends(userId)) {
             userStorage.removeFriend(userId, friendId);
         }
 
-        if (userStorage.haveFriend(friendId)) {
+        if (userStorage.haveFriends(friendId)) {
             userStorage.removeFriend(friendId, userId);
         }
     }
@@ -76,7 +77,7 @@ public class UserService {
     public List<User> getFriends(Integer userId) {
         checkedUserContains(userId);
 
-        return userStorage.getFriends(userId);
+        return new ArrayList<>(userStorage.getFriends(userId));
     }
 
     public List<User> getCommonFriends(Integer userId, Integer otherId) {
@@ -84,12 +85,9 @@ public class UserService {
         checkedUserContains(otherId);
 
         var userFriends = userStorage.getFriends(userId);
-        userFriends.addAll(userStorage.getFriends(otherId));
+        var otherUserFriends = userStorage.getFriends(otherId);
 
-        return userFriends.stream()
-                .distinct()
-                .filter(user -> (user.getId() != userId && user.getId() != otherId))
-                .collect(Collectors.toList());
+        return userFriends.stream().filter(otherUserFriends::contains).collect(Collectors.toList());
     }
 
     public static boolean isEmptyName(String name) {

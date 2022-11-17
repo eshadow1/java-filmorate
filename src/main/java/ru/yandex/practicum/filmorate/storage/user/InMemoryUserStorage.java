@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.models.Users;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User get(Integer idUser) {
+    public User get(int idUser) {
         return users.get(idUser);
     }
 
@@ -63,25 +64,25 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean haveFriend(Integer userId) {
-        if (!usersFriends.containsKey(userId)) {
+    public boolean haveFriends(Integer userId) {
+        var userFriends = usersFriends.get(userId);
+
+        if (userFriends == null) {
             return false;
         }
-        return !usersFriends.get(userId).isEmpty();
+        return !userFriends.isEmpty();
     }
 
     @Override
-    public List<User> getFriends(Integer userId) {
-        if (!usersFriends.containsKey(userId)) {
-            return Collections.emptyList();
+    public Set<User> getFriends(Integer userId) {
+        var userFriends = usersFriends.get(userId);
+
+        if (userFriends == null) {
+            return Collections.emptySet();
         }
 
-        return usersFriends.get(userId).stream().map(id ->
-                users.containsKey(id) ? users.get(id) :
-                        User.builder()
-                                .id(id)
-                                .login("removeUser")
-                                .name("removeUser").build()
-        ).collect(Collectors.toList());
+        return userFriends.stream()
+                .map(id -> users.containsKey(id) ? users.get(id) : Users.getRemoveUser(id))
+                .collect(Collectors.toSet());
     }
 }

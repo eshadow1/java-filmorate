@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.models.Film;
+
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +51,7 @@ class InMemoryFilmStorageTest {
     void update() {
         filmStorage.add(correctFilm);
         filmStorage.update(updateFilm);
-        assertEquals( "adipisicingUpdate", filmStorage.get(correctFilm.getId()).getDescription());
+        assertEquals("adipisicingUpdate", filmStorage.get(correctFilm.getId()).getDescription());
 
     }
 
@@ -73,9 +74,42 @@ class InMemoryFilmStorageTest {
                 .duration(180).build();
         filmStorage.add(correctFilm2);
 
-        int idUser = 2;
+        int idUser = 1;
         filmStorage.addFilmLike(idFilm2, idUser);
-        assertEquals(idFilm2, filmStorage.getFilmsWithLikes().get(0).getId());
+        assertEquals(idFilm2, filmStorage.getFilmsSortedByLikes().get(0).getId());
+    }
+
+    @Test
+    void checkCorrectSortedFilm() {
+        filmStorage.add(correctFilm);
+        LocalDate localDate = LocalDate.of(1968, 3, 25);
+        int idFilm2 = 2;
+        var correctFilm2 = Film.builder()
+                .id(idFilm2)
+                .name("nisi eiusmod")
+                .description("adipisicing")
+                .releaseDate(localDate)
+                .duration(180).build();
+
+        int idFilm3 = 3;
+        var correctFilm3 = Film.builder()
+                .id(idFilm3)
+                .name("nisi eiusmod")
+                .description("adipisicing")
+                .releaseDate(localDate)
+                .duration(180).build();
+
+        filmStorage.add(correctFilm2);
+        filmStorage.add(correctFilm3);
+
+        int idUser = 1;
+        int idUser2 = 2;
+        filmStorage.addFilmLike(idFilm2, idUser);
+        filmStorage.addFilmLike(idFilm3, idUser);
+        filmStorage.addFilmLike(idFilm3, idUser2);
+
+        assertEquals(idFilm3, filmStorage.getFilmsSortedByLikes().get(0).getId());
+        assertEquals(idFilm2, filmStorage.getFilmsSortedByLikes().get(1).getId());
     }
 
     @Test
@@ -94,6 +128,6 @@ class InMemoryFilmStorageTest {
         int idUser = 2;
         filmStorage.addFilmLike(idFilm2, idUser);
         filmStorage.removeFilmLike(idFilm2, idUser);
-        assertEquals(idFilm, filmStorage.getFilmsWithLikes().get(0).getId());
+        assertEquals(idFilm, filmStorage.getFilmsSortedByLikes().get(0).getId());
     }
 }

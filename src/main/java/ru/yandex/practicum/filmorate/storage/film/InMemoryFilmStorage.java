@@ -41,7 +41,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film get(Integer idFilm) {
+    public Film get(int idFilm) {
         return films.get(idFilm);
     }
 
@@ -59,13 +59,13 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void removeFilmLike(int filmId, int userId) {
-        if (filmLikes.containsKey(filmId)) {
-            filmLikes.get(filmId).remove(userId);
-        }
+        checkedFilmLikesContains(filmId);
+
+        filmLikes.get(filmId).remove(userId);
     }
 
     @Override
-    public List<Film> getFilmsWithLikes() {
+    public List<Film> getFilmsSortedByLikes() {
         return filmLikes.entrySet().stream()
                 .sorted((a, b) -> b.getValue().size() - a.getValue().size())
                 .map(a -> films.get(a.getKey())).collect(Collectors.toList());

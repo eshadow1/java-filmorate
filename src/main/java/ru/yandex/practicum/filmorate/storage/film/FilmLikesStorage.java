@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface FilmLikesStorage {
     void addFilmLike(int filmId, int userId);
+
     void removeFilmLike(int filmId, int userId);
-    List<Film> getFilmsWithLikes();
+
+    List<Film> getFilmsSortedByLikes();
 }

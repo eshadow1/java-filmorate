@@ -74,7 +74,7 @@ class InMemoryUserStorageTest {
     @Test
     void notHaveFriend() {
         userStorage.add(correctUser);
-        assertFalse(userStorage.haveFriend(idUser));
+        assertFalse(userStorage.haveFriends(idUser));
     }
 
     @Test
@@ -82,8 +82,8 @@ class InMemoryUserStorageTest {
         userStorage.add(correctUser);
         userStorage.add(correctUser2);
         userStorage.addFriend(idUser, idUser2);
-        assertTrue(userStorage.haveFriend(idUser));
-        assertTrue(userStorage.haveFriend(idUser2));
+        assertTrue(userStorage.haveFriends(idUser));
+        assertTrue(userStorage.haveFriends(idUser2));
     }
 
     @Test
@@ -92,8 +92,8 @@ class InMemoryUserStorageTest {
         userStorage.add(correctUser2);
         userStorage.addFriend(idUser, idUser2);
         userStorage.removeFriend(idUser2, idUser);
-        assertFalse(userStorage.haveFriend(idUser));
-        assertFalse(userStorage.haveFriend(idUser2));
+        assertFalse(userStorage.haveFriends(idUser));
+        assertFalse(userStorage.haveFriends(idUser2));
     }
 
     @Test

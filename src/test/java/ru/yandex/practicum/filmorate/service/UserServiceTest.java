@@ -53,6 +53,7 @@ class UserServiceTest {
         userService.addUser(correctUser);
         assertEquals(1, userService.getAllUsers().size());
     }
+
     @Test
     void addNullNameUser() {
         userService.addUser(nullNameUser);
@@ -100,7 +101,7 @@ class UserServiceTest {
     void getNoAddedUser() {
         assertThrows(
                 ContainsException.class,
-                ()->userService.getUser(1));
+                () -> userService.getUser(1));
     }
 
     @Test
@@ -136,11 +137,22 @@ class UserServiceTest {
                 .email("mail@yandex.ru")
                 .login("dolore")
                 .birthday(localDate).build();
+        User correctUser4 = User.builder()
+                .id(0)
+                .name("Nick Name")
+                .email("ya@yandex.ru")
+                .login("dol")
+                .birthday(localDate).build();
+
         userService.addUser(correctUser);
         userService.addUser(correctUser2);
         userService.addUser(correctUser3);
+        userService.addUser(correctUser4);
         userService.addFriend(1, 3);
+        userService.addFriend(1, 4);
         userService.addFriend(2, 3);
+        userService.addFriend(2, 1);
+
         assertEquals(1, userService.getCommonFriends(1, 2).size());
         assertEquals(3, userService.getCommonFriends(1, 2).get(0).getId());
     }
