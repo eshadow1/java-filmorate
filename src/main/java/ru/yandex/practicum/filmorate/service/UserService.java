@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +48,6 @@ public class UserService {
         return userStorage.get(userId);
     }
 
-
     public List<User> getAllUsers() {
         return userStorage.getAll();
     }
@@ -77,7 +76,9 @@ public class UserService {
     public List<User> getFriends(Integer userId) {
         checkedUserContains(userId);
 
-        return new ArrayList<>(userStorage.getFriends(userId));
+        return userStorage.getFriends(userId).stream()
+                .sorted(Comparator.comparingInt(User::getId))
+                .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(Integer userId, Integer otherId) {
@@ -87,7 +88,10 @@ public class UserService {
         var userFriends = userStorage.getFriends(userId);
         var otherUserFriends = userStorage.getFriends(otherId);
 
-        return userFriends.stream().filter(otherUserFriends::contains).collect(Collectors.toList());
+        return userFriends.stream()
+                .filter(otherUserFriends::contains)
+                .sorted(Comparator.comparingInt(User::getId))
+                .collect(Collectors.toList());
     }
 
     public static boolean isEmptyName(String name) {
