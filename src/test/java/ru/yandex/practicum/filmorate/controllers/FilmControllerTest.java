@@ -9,9 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -197,6 +195,71 @@ class FilmControllerTest {
             mockMvc.perform(get(endpoint)
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getUnknownFilm() {
+        try {
+            mockMvc.perform(get(endpoint+"/-1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getFilm() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectFilmDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(get(endpoint+"/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getPopularFilms() {
+        try {
+            mockMvc.perform(get(endpoint+"/popular")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void addLikeUnknownFilm() {
+        try {
+            mockMvc.perform(put(endpoint + "/-1/like/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void removeLikeUnknownFilm() {
+        try {
+            mockMvc.perform(delete(endpoint + "/-1/like/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound());
 
         } catch (Exception e) {
             throw new RuntimeException(e);

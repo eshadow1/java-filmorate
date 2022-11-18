@@ -9,9 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -171,7 +169,7 @@ class UserControllerTest {
             ).andExpect(status().isCreated());
 
             String jsonUpdateUser = "{" +
-                    "  \"id\": 2," +
+                    "  \"id\": 10," +
                     "  \"login\": \"dolore\"," +
                     "  \"name\": \"Nick\"," +
                     "  \"email\": \"mail@mail.ru\"," +
@@ -190,6 +188,153 @@ class UserControllerTest {
     void getUsers() {
         try {
             mockMvc.perform(get(endpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getUnknownUser() {
+        try {
+            mockMvc.perform(get(endpoint + "/-1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getUser() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(get(endpoint + "/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getFriendsUser() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(get(endpoint + "/1/friends")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getFriendsUnknownUser() {
+        try {
+            mockMvc.perform(get(endpoint + "/-1/friends")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void addFriendUnknownUser() {
+        try {
+            mockMvc.perform(put(endpoint + "/-1/friends/2")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void removeFriendUnknownUser() {
+        try {
+            mockMvc.perform(delete(endpoint + "/-1/friends/2")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isNotFound());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void addFriendUser() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(put(endpoint + "/1/friends/2")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Test
+    void removeFriendUser() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(delete(endpoint + "/1/friends/2")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void getFriendsUserWithOtherUser() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(get(endpoint + "/1/friends/common/2")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk());
 
