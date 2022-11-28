@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.models;
+package ru.yandex.practicum.filmorate.models.user;
 
 public class Users {
     public static User getRemoveUser(Integer id) {

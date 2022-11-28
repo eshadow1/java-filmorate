@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.models.User;
-import ru.yandex.practicum.filmorate.models.Users;
+import ru.yandex.practicum.filmorate.models.user.User;
+import ru.yandex.practicum.filmorate.models.user.Users;
 
 import java.util.*;
 import java.util.stream.Collectors;

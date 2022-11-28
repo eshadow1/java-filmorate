@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.models;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.models.user.Users;
 
 import static org.junit.jupiter.api.Assertions.*;
 

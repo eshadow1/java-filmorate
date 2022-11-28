@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
-import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.models.user.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 

@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
-import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.film.Film;
 
 import java.util.*;
 import java.util.stream.Collectors;

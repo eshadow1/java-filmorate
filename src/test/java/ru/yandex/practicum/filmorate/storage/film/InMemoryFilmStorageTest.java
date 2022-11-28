@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.film.Film;
 
 import java.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.models;
+package ru.yandex.practicum.filmorate.models.user;
 
 import lombok.Builder;
 import lombok.NonNull;

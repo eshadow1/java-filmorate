@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
-import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.models.user.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 

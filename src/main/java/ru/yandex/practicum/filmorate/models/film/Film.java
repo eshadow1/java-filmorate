@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.models;
+package ru.yandex.practicum.filmorate.models.film;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,4 +22,8 @@ public class Film {
 
     @PositiveOrZero
     int duration;
+
+    Genre genre;
+
+    RatingMPA ratingMPA;
 }
