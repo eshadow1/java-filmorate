@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -19,7 +20,9 @@ public class FilmService {
     private final GeneratorId generatorId;
     private final UserStorage userStorage;
 
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, GeneratorId generatorId) {
+    public FilmService(@Qualifier("inMemory") FilmStorage filmStorage,
+                       @Qualifier("inMemory") UserStorage userStorage,
+                       GeneratorId generatorId) {
         this.filmStorage = filmStorage;
         this.generatorId = generatorId;
         this.userStorage = userStorage;

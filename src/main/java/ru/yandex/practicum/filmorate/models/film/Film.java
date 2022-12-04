@@ -2,9 +2,12 @@ package ru.yandex.practicum.filmorate.models.film;
 
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.yandex.practicum.filmorate.models.genre.Genre;
+import ru.yandex.practicum.filmorate.models.mpa.MpaMemory;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Value
 @Builder(toBuilder = true)
@@ -23,7 +26,7 @@ public class Film {
     @PositiveOrZero
     int duration;
 
-    Genre genre;
+    List<Genre> genreMemories;
 
-    RatingMPA ratingMPA;
+    MpaMemory mpaMemory;
 }

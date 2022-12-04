@@ -1,13 +1,15 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.models.film.Film;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@Repository
+@Qualifier("inMemory")
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> films;
     private final Map<Integer, Set<Integer>> filmLikes;

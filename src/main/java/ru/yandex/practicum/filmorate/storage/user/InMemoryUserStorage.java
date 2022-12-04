@@ -1,13 +1,15 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.user.User;
 import ru.yandex.practicum.filmorate.models.user.Users;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@Repository
+@Qualifier("inMemory")
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users;
     private final Map<Integer, Set<Integer>> usersFriends;
