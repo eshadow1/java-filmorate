@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.models.genre;
 
 public enum GenreMemory {
-    UNKNOWN(0, "Неизвестный"),
+    //UNKNOWN(0, "Неизвестный"),
     COMEDY(1, "Комедия"),
     DRAMA(2, "Драма"),
     CARTOON(3, "Мультфильм"),

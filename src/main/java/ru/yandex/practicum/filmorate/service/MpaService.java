@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.models.mpa.Mpa;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
@@ -20,6 +21,13 @@ public class MpaService {
     }
 
     public Mpa getMpa(int id) {
+        checkedMpaContains(id);
         return mpaStorage.get(id);
+    }
+
+    private void checkedMpaContains(int id) {
+        if (!mpaStorage.contains(id)) {
+            throw new ContainsException("Рейтинг MPA с id " + id + " не найден");
+        }
     }
 }

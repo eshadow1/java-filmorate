@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.film.Film;
 import ru.yandex.practicum.filmorate.models.user.User;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.InMemoryGenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.InMemoryMpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
@@ -25,8 +27,9 @@ class FilmServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        userStorage = new InMemoryUserStorage();
-        filmService = new FilmService(new InMemoryFilmStorage(), userStorage, new GeneratorId());
+        userStorage = new InMemoryUserStorage(new GeneratorId());
+        filmService = new FilmService(new InMemoryFilmStorage(new InMemoryMpaStorage(),
+                new InMemoryGenreStorage(), new GeneratorId()), userStorage);
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         LocalDate localDateIncorrect = LocalDate.of(1867, 3, 25);
         correctFilm = Film.builder()

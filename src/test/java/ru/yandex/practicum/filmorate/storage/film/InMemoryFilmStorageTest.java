@@ -3,6 +3,9 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.models.film.Film;
+import ru.yandex.practicum.filmorate.storage.genre.InMemoryGenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.InMemoryMpaStorage;
+import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
 
@@ -16,7 +19,8 @@ class InMemoryFilmStorageTest {
 
     @BeforeEach
     public void beforeEach() {
-        filmStorage = new InMemoryFilmStorage();
+        filmStorage = new InMemoryFilmStorage(new InMemoryMpaStorage(),
+                new InMemoryGenreStorage(), new GeneratorId());
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         idFilm = 1;
         correctFilm = Film.builder()

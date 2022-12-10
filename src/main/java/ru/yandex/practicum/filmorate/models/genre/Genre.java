@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.models.genre;
 
-import lombok.Value;
+import lombok.Builder;
+import lombok.Data;
 
-@Value
+@Data
+@Builder(toBuilder = true)
 public class Genre {
     int id;
     String name;

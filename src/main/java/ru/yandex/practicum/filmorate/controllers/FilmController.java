@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/films")
+
 public class FilmController {
     private final FilmService filmService;
 
@@ -22,6 +24,7 @@ public class FilmController {
     }
 
     @PostMapping
+    @JsonProperty(required = true)
     public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос на добавление фильма: " + film);
         try {
@@ -33,12 +36,13 @@ public class FilmController {
     }
 
     @PutMapping
+    @JsonProperty(required = true)
     public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос на обновление фильма " + film.getId() + ": " + film);
 
-        filmService.updateFilm(film);
+        Film updateFilm = filmService.updateFilm(film);
 
-        return ResponseEntity.status(HttpStatus.OK).body(film);
+        return ResponseEntity.status(HttpStatus.OK).body(updateFilm);
     }
 
     @PutMapping("/{id}/like/{userId}")

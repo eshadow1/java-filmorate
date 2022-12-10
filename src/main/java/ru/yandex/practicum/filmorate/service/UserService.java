@@ -14,16 +14,15 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserStorage userStorage;
-    private final GeneratorId generatorId;
+
 
     public UserService(@Qualifier("inMemory") UserStorage userStorage, GeneratorId generatorId) {
         this.userStorage = userStorage;
-        this.generatorId = generatorId;
     }
 
     public User addUser(User user) {
         String name = getCorrectName(user);
-        User creatingUser = user.toBuilder().id(generatorId.getId()).name(name).build();
+        User creatingUser = user.toBuilder().name(name).build();
         return userStorage.add(creatingUser);
     }
 
@@ -58,7 +57,6 @@ public class UserService {
         checkedUserContains(friendId);
 
         userStorage.addFriend(userId, friendId);
-        userStorage.addFriend(friendId, userId);
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
@@ -67,10 +65,6 @@ public class UserService {
 
         if (userStorage.haveFriends(userId)) {
             userStorage.removeFriend(userId, friendId);
-        }
-
-        if (userStorage.haveFriends(friendId)) {
-            userStorage.removeFriend(friendId, userId);
         }
     }
 

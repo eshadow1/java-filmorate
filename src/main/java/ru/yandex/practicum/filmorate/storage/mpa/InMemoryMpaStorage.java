@@ -5,10 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.mpa.Mpa;
 import ru.yandex.practicum.filmorate.models.mpa.MpaMemory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -20,28 +17,31 @@ public class InMemoryMpaStorage implements MpaStorage {
         this.mpas = new HashMap<>(
                 Arrays.stream(MpaMemory.values()).collect(
                         Collectors.toMap(mpa -> mpa.index, mpa ->
-                                new Mpa(mpa.index, mpa.name))
+                                Mpa.builder()
+                                        .id(mpa.index)
+                                        .name(mpa.name)
+                                        .build())
                 ));
     }
 
     @Override
-    public Mpa add(Mpa mpa) {
-        return mpas.put(mpa.getId(), mpa);
+    public Mpa add(Mpa mpaInDb) {
+        return mpas.put(mpaInDb.getId(), mpaInDb);
     }
 
     @Override
-    public Mpa remove(Mpa mpa) {
-        return mpas.remove(mpa.getId());
+    public Mpa remove(Mpa mpaInDb) {
+        return mpas.remove(mpaInDb.getId());
     }
 
     @Override
-    public Mpa update(Mpa mpa) {
-        return mpas.put(mpa.getId(), mpa);
+    public Mpa update(Mpa mpaInDb) {
+        return mpas.put(mpaInDb.getId(), mpaInDb);
     }
 
     @Override
     public List<Mpa> getAll() {
-        return null;
+        return new ArrayList<>(mpas.values());
     }
 
     @Override

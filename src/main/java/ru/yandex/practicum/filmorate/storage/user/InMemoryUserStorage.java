@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.user.User;
 import ru.yandex.practicum.filmorate.models.user.Users;
+import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,16 +14,19 @@ import java.util.stream.Collectors;
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users;
     private final Map<Integer, Set<Integer>> usersFriends;
+    private final GeneratorId generatorId;
 
-    public InMemoryUserStorage() {
+    public InMemoryUserStorage(GeneratorId generatorId) {
         this.users = new HashMap<>();
         this.usersFriends = new HashMap<>();
+        this.generatorId = generatorId;
     }
 
     @Override
     public User add(User user) {
-        users.put(user.getId(), user);
-        return user;
+        User creatingUser = user.toBuilder().id(generatorId.getId()).build();
+        users.put(creatingUser.getId(), creatingUser);
+        return creatingUser;
     }
 
     @Override

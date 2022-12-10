@@ -17,7 +17,10 @@ public class InMemoryGenreStorage implements GenreStorage {
         this.genres = new HashMap<>(
                 Arrays.stream(GenreMemory.values()).collect(
                         Collectors.toMap(id -> id.index, id ->
-                                new Genre(id.index, id.name))
+                                Genre.builder()
+                                        .id(id.index)
+                                        .name(id.name)
+                                        .build())
                 ));
     }
 

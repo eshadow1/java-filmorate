@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.models.user.User;
+import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
 
@@ -18,7 +19,7 @@ class InMemoryUserStorageTest {
 
     @BeforeEach
     public void beforeEach() {
-        userStorage = new InMemoryUserStorage();
+        userStorage = new InMemoryUserStorage(new GeneratorId());
         LocalDate localDate = LocalDate.of(2000, 3, 25);
         LocalDate localDate2 = LocalDate.of(2001, 3, 25);
         idUser = 1;

@@ -20,7 +20,7 @@ class UserServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        userService = new UserService(new InMemoryUserStorage(), new GeneratorId());
+        userService = new UserService(new InMemoryUserStorage(new GeneratorId()), new GeneratorId());
         LocalDate localDate = LocalDate.of(2000, 3, 25);
         correctUser = User.builder()
                 .id(0)
