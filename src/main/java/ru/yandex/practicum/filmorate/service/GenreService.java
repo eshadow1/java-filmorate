@@ -12,7 +12,7 @@ import java.util.List;
 public class GenreService {
     private final GenreStorage genreStorage;
 
-    public GenreService(@Qualifier("inMemory") GenreStorage genreStorage) {
+    public GenreService(@Qualifier("inDb") GenreStorage genreStorage) {
         this.genreStorage = genreStorage;
     }
 

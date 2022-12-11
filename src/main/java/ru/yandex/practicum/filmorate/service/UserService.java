@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.models.user.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,7 +15,7 @@ public class UserService {
     private final UserStorage userStorage;
 
 
-    public UserService(@Qualifier("inMemory") UserStorage userStorage, GeneratorId generatorId) {
+    public UserService(@Qualifier("inDb") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 

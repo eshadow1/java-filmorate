@@ -1,6 +1,5 @@
 INSERT INTO genre (id, name)
-VALUES (0, 'Неизвестный'),
-       (1, 'Комедия'),
+VALUES (1, 'Комедия'),
        (2, 'Драма'),
        (3, 'Мультфильм'),
        (4, 'Триллер'),
@@ -8,8 +7,7 @@ VALUES (0, 'Неизвестный'),
        (6, 'Боевик') ON CONFLICT DO NOTHING;
 
 INSERT INTO  mpa (id, name)
-VALUES (0, 'Unknown'),
-       (1, 'G'),
+VALUES (1, 'G'),
        (2, 'PG'),
        (3, 'PG-13'),
        (4, 'R'),

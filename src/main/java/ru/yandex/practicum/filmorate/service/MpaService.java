@@ -12,7 +12,7 @@ import java.util.List;
 public class MpaService {
     private final MpaStorage mpaStorage;
 
-    public MpaService(@Qualifier("inMemory") MpaStorage mpaStorage) {
+    public MpaService(@Qualifier("inDb") MpaStorage mpaStorage) {
         this.mpaStorage = mpaStorage;
     }
 
