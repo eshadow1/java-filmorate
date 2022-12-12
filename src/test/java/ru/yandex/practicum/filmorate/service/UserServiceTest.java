@@ -118,7 +118,7 @@ class UserServiceTest {
         userService.addUser(correctUser2);
         userService.addFriend(1, 2);
         assertEquals(1, userService.getFriends(1).size());
-        assertEquals(1, userService.getFriends(2).size());
+        assertEquals(0, userService.getFriends(2).size());
     }
 
     @Test
@@ -179,9 +179,9 @@ class UserServiceTest {
         userService.addUser(correctUser);
         userService.addUser(correctUser2);
         userService.addFriend(1, 2);
-        userService.removeFriend(2, 1);
+        assertEquals(1, userService.getFriends(1).size());
+        userService.removeFriend(1, 2);
         assertEquals(0, userService.getFriends(1).size());
-        assertEquals(0, userService.getFriends(2).size());
     }
 
     @Test

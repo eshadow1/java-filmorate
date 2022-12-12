@@ -57,7 +57,8 @@ class FilmControllerTest {
                     "  \"name\": \"Name\"," +
                     "  \"description\": \"Description\"," +
                     "  \"releaseDate\": \"1890-03-25\"," +
-                    "  \"duration\": 200" +
+                    "  \"duration\": 200," +
+                    "  \"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonFailFilmDate)
@@ -76,7 +77,8 @@ class FilmControllerTest {
                     "  \"test\": \"Name\"," +
                     "  \"second\": \"Description\"," +
                     "  \"release\": \"1990-03-25\"," +
-                    "  \"durations\": 200" +
+                    "  \"durations\": 200," +
+                    "  \"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonIncorrectFilmDate)
@@ -94,7 +96,8 @@ class FilmControllerTest {
                     "\"name\": \"\"," +
                     "\"description\": \"Description\"," +
                     "\"releaseDate\": \"1900-03-25\"," +
-                    "\"duration\": 200\n" +
+                    "\"duration\": 200," +
+                    "\"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonUser)
@@ -114,7 +117,8 @@ class FilmControllerTest {
                     "разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов,  " +
                     "который за время «своего отсутствия», стал кандидатом Коломбани.\"," +
                     "\"releaseDate\": \"1900-03-25\"," +
-                    "\"duration\": 200" +
+                    "\"duration\": 200," +
+                    "\"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonUser)
@@ -132,7 +136,8 @@ class FilmControllerTest {
                     "  \"name\": \"Name\",\n" +
                     "  \"description\": \"Descrition\",\n" +
                     "  \"releaseDate\": \"1980-03-25\",\n" +
-                    "  \"duration\": -200\n" +
+                    "  \"duration\": -200,\n" +
+                    "  \"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonUser)
@@ -156,7 +161,8 @@ class FilmControllerTest {
                     "\"name\": \"nisi eiusmod\"," +
                     "\"description\": \"adipisicingUpdate\"," +
                     "\"releaseDate\": \"1967-03-25\"," +
-                    "\"duration\": 100" +
+                    "\"duration\": 100," +
+                    "\"mpa\": { \"id\": 1}" +
                     "}";
 
             mockMvc.perform(put(endpoint)
@@ -182,7 +188,8 @@ class FilmControllerTest {
                     "\"name\": \"nisi eiusmod\"," +
                     "\"description\": \"adipisicingUpdate\"," +
                     "\"releaseDate\": \"1967-03-25\"," +
-                    "\"duration\": 100" +
+                    "\"duration\": 100," +
+                    "\"mpa\": { \"id\": 1}" +
                     "}";
 
             mockMvc.perform(put(endpoint)

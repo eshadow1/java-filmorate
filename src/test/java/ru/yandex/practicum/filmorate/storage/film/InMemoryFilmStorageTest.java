@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.models.film.Film;
+import ru.yandex.practicum.filmorate.models.mpa.Mpa;
 import ru.yandex.practicum.filmorate.storage.genre.InMemoryGenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.InMemoryMpaStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
@@ -16,6 +17,7 @@ class InMemoryFilmStorageTest {
     private Film correctFilm;
     private Film updateFilm;
     private int idFilm;
+    private Mpa mpa;
 
     @BeforeEach
     public void beforeEach() {
@@ -23,25 +25,33 @@ class InMemoryFilmStorageTest {
                 new InMemoryGenreStorage(), new GeneratorId());
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         idFilm = 1;
+        mpa = Mpa.builder().id(1).build();
         correctFilm = Film.builder()
                 .id(idFilm)
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(localDate)
-                .duration(100).build();
+                .duration(100)
+                .mpa(mpa)
+                .build();
         updateFilm = Film.builder()
                 .id(idFilm)
                 .name("nisi eiusmod")
                 .description("adipisicingUpdate")
                 .releaseDate(localDate)
-                .duration(100).build();
+                .duration(100)
+                .mpa(mpa)
+                .build();
     }
 
     @Test
     void add() {
         filmStorage.add(correctFilm);
         assertTrue(filmStorage.contains(correctFilm.getId()));
-        assertEquals(correctFilm, filmStorage.get(correctFilm.getId()));
+        assertEquals(correctFilm.getId(), filmStorage.get(correctFilm.getId()).getId());
+        assertEquals(correctFilm.getName(), filmStorage.get(correctFilm.getId()).getName());
+        assertEquals(correctFilm.getDuration(), filmStorage.get(correctFilm.getId()).getDuration());
+        assertEquals(correctFilm.getDescription(), filmStorage.get(correctFilm.getId()).getDescription());
     }
 
     @Test
@@ -75,7 +85,9 @@ class InMemoryFilmStorageTest {
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(localDate)
-                .duration(180).build();
+                .duration(180)
+                .mpa(mpa)
+                .build();
         filmStorage.add(correctFilm2);
 
         int idUser = 1;
@@ -93,7 +105,9 @@ class InMemoryFilmStorageTest {
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(localDate)
-                .duration(180).build();
+                .duration(180)
+                .mpa(mpa)
+                .build();
 
         int idFilm3 = 3;
         var correctFilm3 = Film.builder()
@@ -101,7 +115,9 @@ class InMemoryFilmStorageTest {
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(localDate)
-                .duration(180).build();
+                .duration(180)
+                .mpa(mpa)
+                .build();
 
         filmStorage.add(correctFilm2);
         filmStorage.add(correctFilm3);
@@ -126,7 +142,9 @@ class InMemoryFilmStorageTest {
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(localDate)
-                .duration(180).build();
+                .duration(180)
+                .mpa(mpa)
+                .build();
         filmStorage.add(correctFilm2);
 
         int idUser = 2;

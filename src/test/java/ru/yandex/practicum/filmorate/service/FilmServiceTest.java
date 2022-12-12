@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.film.Film;
+import ru.yandex.practicum.filmorate.models.mpa.Mpa;
 import ru.yandex.practicum.filmorate.models.user.User;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.InMemoryGenreStorage;
@@ -24,6 +25,7 @@ class FilmServiceTest {
     private Film incorrectFilm;
     private Film updateFilm;
     private Film nullDateFilm;
+    private Mpa mpa;
 
     @BeforeEach
     public void beforeEach() {
@@ -32,30 +34,40 @@ class FilmServiceTest {
                 new InMemoryGenreStorage(), new GeneratorId()), userStorage);
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         LocalDate localDateIncorrect = LocalDate.of(1867, 3, 25);
+
+        mpa = Mpa.builder().id(1).build();
         correctFilm = Film.builder()
                 .id(0)
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(localDate)
-                .duration(100).build();
+                .duration(100)
+                .mpa(mpa)
+                .build();
         updateFilm = Film.builder()
                 .id(1)
                 .name("nisi eiusmod")
                 .description("adipisicingUpdate")
                 .releaseDate(localDate)
-                .duration(100).build();
+                .duration(100)
+                .mpa(mpa)
+                .build();
         incorrectFilm = Film.builder()
                 .id(0)
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(localDateIncorrect)
-                .duration(100).build();
+                .duration(100)
+                .mpa(mpa)
+                .build();
         nullDateFilm = Film.builder()
                 .id(0)
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(null)
-                .duration(100).build();
+                .duration(100)
+                .mpa(mpa)
+                .build();
     }
 
     @Test
@@ -150,7 +162,9 @@ class FilmServiceTest {
                 .name("nisi eiusmod")
                 .description("adipisicing")
                 .releaseDate(localDate)
-                .duration(180).build();
+                .duration(180)
+                .mpa(mpa)
+                .build();
         filmService.addFilm(correctFilm2);
         filmService.addFilmLike(1, 1);
         assertEquals(1, filmService.getTopFilms(1).get(0).getId());
