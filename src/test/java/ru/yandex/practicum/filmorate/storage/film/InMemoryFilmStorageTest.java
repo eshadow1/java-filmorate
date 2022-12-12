@@ -3,18 +3,22 @@ package ru.yandex.practicum.filmorate.storage.film;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.models.film.Film;
+import ru.yandex.practicum.filmorate.models.genre.Genre;
 import ru.yandex.practicum.filmorate.models.mpa.Mpa;
 import ru.yandex.practicum.filmorate.storage.genre.InMemoryGenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.InMemoryMpaStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryFilmStorageTest {
     private InMemoryFilmStorage filmStorage;
     private Film correctFilm;
+    private Film correctFilmWithGenre;
     private Film updateFilm;
     private int idFilm;
     private Mpa mpa;
@@ -26,6 +30,8 @@ class InMemoryFilmStorageTest {
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         idFilm = 1;
         mpa = Mpa.builder().id(1).build();
+        List<Genre> genres = new ArrayList<>();
+        genres.add(Genre.builder().id(1).build());
         correctFilm = Film.builder()
                 .id(idFilm)
                 .name("nisi eiusmod")
@@ -33,6 +39,15 @@ class InMemoryFilmStorageTest {
                 .releaseDate(localDate)
                 .duration(100)
                 .mpa(mpa)
+                .build();
+        correctFilmWithGenre = Film.builder()
+                .id(idFilm)
+                .name("nisi eiusmod")
+                .description("adipisicing")
+                .releaseDate(localDate)
+                .duration(100)
+                .mpa(mpa)
+                .genres(genres)
                 .build();
         updateFilm = Film.builder()
                 .id(idFilm)
@@ -52,6 +67,16 @@ class InMemoryFilmStorageTest {
         assertEquals(correctFilm.getName(), filmStorage.get(correctFilm.getId()).getName());
         assertEquals(correctFilm.getDuration(), filmStorage.get(correctFilm.getId()).getDuration());
         assertEquals(correctFilm.getDescription(), filmStorage.get(correctFilm.getId()).getDescription());
+    }
+
+    @Test
+    void addWithGenre() {
+        filmStorage.add(correctFilmWithGenre);
+        assertTrue(filmStorage.contains(correctFilmWithGenre.getId()));
+        assertEquals(correctFilm.getId(), filmStorage.get(correctFilmWithGenre.getId()).getId());
+        assertEquals(correctFilm.getName(), filmStorage.get(correctFilmWithGenre.getId()).getName());
+        assertEquals(correctFilm.getDuration(), filmStorage.get(correctFilmWithGenre.getId()).getDuration());
+        assertEquals(correctFilm.getDescription(), filmStorage.get(correctFilmWithGenre.getId()).getDescription());
     }
 
     @Test

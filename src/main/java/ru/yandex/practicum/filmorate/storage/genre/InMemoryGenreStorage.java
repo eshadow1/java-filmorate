@@ -41,7 +41,6 @@ public class InMemoryGenreStorage implements GenreStorage {
 
     @Override
     public List<Genre> getAll() {
-
         return new ArrayList<>(genres.values());
     }
 
