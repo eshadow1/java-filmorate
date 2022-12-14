@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.genre;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -20,40 +19,6 @@ public class DbGenreStorage implements GenreStorage {
 
     public DbGenreStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    @Modifying
-    public Genre add(Genre genre) {
-        String sql = "INSERT INTO genre " +
-                "(id, name) " +
-                "VALUES (?, ?);";
-
-        jdbcTemplate.update(sql, genre.getId(), genre.getName());
-
-        return genre;
-    }
-
-    @Override
-    @Modifying
-    public Genre remove(Genre genre) {
-        String sql = "DELETE FROM genre " +
-                "WHERE id = ?;";
-
-        jdbcTemplate.update(sql, genre.getId());
-
-        return genre;
-    }
-
-    @Override
-    @Modifying
-    public Genre update(Genre genre) {
-        String sql = "UPDATE genre " +
-                "SET name = ? " +
-                "WHERE id = ?;";
-
-        jdbcTemplate.update(sql, genre.getName(), genre.getId());
-        return genre;
     }
 
     @Override

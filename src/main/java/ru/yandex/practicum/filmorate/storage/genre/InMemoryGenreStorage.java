@@ -25,21 +25,6 @@ public class InMemoryGenreStorage implements GenreStorage {
     }
 
     @Override
-    public Genre add(Genre genre) {
-        return genres.put(genre.getId(), genre);
-    }
-
-    @Override
-    public Genre remove(Genre genre) {
-        return genres.remove(genre.getId());
-    }
-
-    @Override
-    public Genre update(Genre genre) {
-        return genres.put(genre.getId(), genre);
-    }
-
-    @Override
     public List<Genre> getAll() {
         return new ArrayList<>(genres.values());
     }

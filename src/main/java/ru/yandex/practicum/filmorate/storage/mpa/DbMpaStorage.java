@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.mpa;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -20,41 +19,6 @@ public class DbMpaStorage implements MpaStorage {
 
     public DbMpaStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    @Modifying
-    public Mpa add(Mpa mpa) {
-        String sql = "INSERT INTO mpa " +
-                "(id, name) " +
-                "VALUES (?, ?);";
-
-        jdbcTemplate.update(sql, mpa.getId(),
-                mpa.getName());
-
-        return mpa;
-    }
-
-    @Override
-    @Modifying
-    public Mpa remove(Mpa mpa) {
-        String sql = "DELETE FROM mpa " +
-                "WHERE id = ?;";
-
-        jdbcTemplate.update(sql, mpa.getId());
-
-        return mpa;
-    }
-
-    @Override
-    @Modifying
-    public Mpa update(Mpa mpa) {
-        String sql = "UPDATE mpa " +
-                "SET name = ? " +
-                "WHERE id = ?;";
-
-        jdbcTemplate.update(sql, mpa.getName(), mpa.getId());
-        return mpa;
     }
 
     @Override

@@ -65,7 +65,7 @@ public class DbFilmStorage implements FilmStorage {
         addGenres(idFilm, film.getGenres());
 
         Mpa mpa = getMpa(mpaId);
-        List<Genre> genre = getGenres(idFilm);
+        Set<Genre> genre = getGenres(idFilm);
 
         log.info("Найден фильм: {} {}", idFilm, nameFilm);
         return Film.builder()
@@ -107,12 +107,12 @@ public class DbFilmStorage implements FilmStorage {
         return get(film.getId());
     }
 
-    private void addGenres(int id, List<Genre> genres) {
+    private void addGenres(int id, Set<Genre> genres) {
         String sqlOldGenre = "DELETE FROM genres_film " +
                 "WHERE id_film = ?;";
         jdbcTemplate.update(sqlOldGenre, id);
 
-        if(genres == null || genres.isEmpty()) {
+        if (genres == null || genres.isEmpty()) {
             return;
         }
 
@@ -132,7 +132,9 @@ public class DbFilmStorage implements FilmStorage {
         List<Film> films = new ArrayList<>();
 
         while (filmRows.next()) {
-            films.add(mapFilm(filmRows));
+            var film = mapFilm(filmRows);
+            log.info("Найден фильм: {} {}", film.getId(), film.getName());
+            films.add(film);
         }
 
         return films;
@@ -143,10 +145,12 @@ public class DbFilmStorage implements FilmStorage {
         String sql = "SELECT * " +
                 "FROM films " +
                 "WHERE id = ?;";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, filmId);
+        SqlRowSet filmsRows = jdbcTemplate.queryForRowSet(sql, filmId);
 
-        if (userRows.next()) {
-           return mapFilm(userRows);
+        if (filmsRows.next()) {
+            var film = mapFilm(filmsRows);
+            log.info("Найден фильм: {} {}", film.getId(), film.getName());
+            return film;
         } else {
             log.info("Фильм с идентификатором {} не найден.", filmId);
             return null;
@@ -193,7 +197,6 @@ public class DbFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilmsSortedByLikes() {
-
         String sql = "SELECT * " +
                 "FROM films " +
                 "LEFT JOIN GENRES_FILM GF ON FILMS.ID = GF.ID_FILM " +
@@ -204,7 +207,9 @@ public class DbFilmStorage implements FilmStorage {
         List<Film> films = new ArrayList<>();
 
         while (filmsRows.next()) {
-            films.add(mapFilm(filmsRows));
+            var film = mapFilm(filmsRows);
+            log.info("Найден фильм: {} {}", film.getId(), film.getName());
+            films.add(film);
         }
         return films;
     }
@@ -222,7 +227,7 @@ public class DbFilmStorage implements FilmStorage {
         return mpa;
     }
 
-    private List<Genre> getGenres(int idFilm) {
+    private Set<Genre> getGenres(int idFilm) {
         String sqlGenre = "SELECT * " +
                 "FROM genre " +
                 "WHERE id IN (SELECT id_genre " +
@@ -236,7 +241,7 @@ public class DbFilmStorage implements FilmStorage {
                     .name(genreRows.getString("name"))
                     .build());
         }
-        return new ArrayList<>(genre);
+        return genre;
     }
 
     private Film mapFilm(SqlRowSet userRows) {
@@ -247,9 +252,9 @@ public class DbFilmStorage implements FilmStorage {
         int durationFilm = userRows.getInt("duration");
         int mpaId = userRows.getInt("id_mpa");
         Mpa mpa = getMpa(mpaId);
-        List<Genre> genre = getGenres(idFilm);
+        Set<Genre> genre = getGenres(idFilm);
 
-        log.info("Найден фильм: {} {}", idFilm, nameFilm);
+
         return Film.builder()
                 .id(idFilm)
                 .name(nameFilm)

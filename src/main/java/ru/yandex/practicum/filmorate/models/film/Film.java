@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.models.mpa.Mpa;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Value
 @Builder(toBuilder = true)
@@ -26,6 +26,8 @@ public class Film {
     @PositiveOrZero
     int duration;
 
+    @NotNull
     Mpa mpa;
-    List<Genre> genres;
+
+    Set<Genre> genres;
 }

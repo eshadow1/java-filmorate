@@ -25,21 +25,6 @@ public class InMemoryMpaStorage implements MpaStorage {
     }
 
     @Override
-    public Mpa add(Mpa mpaInDb) {
-        return mpas.put(mpaInDb.getId(), mpaInDb);
-    }
-
-    @Override
-    public Mpa remove(Mpa mpaInDb) {
-        return mpas.remove(mpaInDb.getId());
-    }
-
-    @Override
-    public Mpa update(Mpa mpaInDb) {
-        return mpas.put(mpaInDb.getId(), mpaInDb);
-    }
-
-    @Override
     public List<Mpa> getAll() {
         return new ArrayList<>(mpas.values());
     }

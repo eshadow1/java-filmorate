@@ -71,37 +71,4 @@ class InMemoryUserStorageTest {
         userStorage.add(correctUser);
         assertEquals(1, userStorage.getAll().size());
     }
-
-    @Test
-    void notHaveFriend() {
-        userStorage.add(correctUser);
-        assertFalse(userStorage.haveFriends(idUser));
-    }
-
-    @Test
-    void addFriend() {
-        userStorage.add(correctUser);
-        userStorage.add(correctUser2);
-        userStorage.addFriend(idUser, idUser2);
-        assertTrue(userStorage.haveFriends(idUser));
-        assertTrue(userStorage.haveFriends(idUser2));
-    }
-
-    @Test
-    void removeFriend() {
-        userStorage.add(correctUser);
-        userStorage.add(correctUser2);
-        userStorage.addFriend(idUser, idUser2);
-        userStorage.removeFriend(idUser2, idUser);
-        assertFalse(userStorage.haveFriends(idUser));
-        assertFalse(userStorage.haveFriends(idUser2));
-    }
-
-    @Test
-    void getFriends() {
-        userStorage.add(correctUser);
-        userStorage.add(correctUser2);
-        userStorage.addFriend(idUser, idUser2);
-        assertEquals(1, userStorage.getFriends(idUser).size());
-    }
 }

@@ -11,9 +11,9 @@ import ru.yandex.practicum.filmorate.models.user.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import static ru.yandex.practicum.filmorate.mapping.Mapping.mapUser;
 
 @Repository
 @Qualifier("inDb")
@@ -141,70 +141,5 @@ public class DbUserStorage implements UserStorage {
             log.info("Пользователь с идентификатором {} не найден.", userId);
             return false;
         }
-    }
-
-    @Override
-    @Modifying
-    public boolean addFriend(Integer userId, Integer friendId) {
-        String sql = "INSERT INTO friends_user " +
-                "(id_first_user, id_second_user) " +
-                "VALUES (?, ?);";
-        jdbcTemplate.update(sql, userId, friendId);
-        return true;
-    }
-
-    @Override
-    @Modifying
-    public void removeFriend(Integer userId, Integer friendId) {
-        String sql = "DELETE FROM friends_user " +
-                "WHERE id_first_user = ? " +
-                "and id_second_user = ?;";
-
-        jdbcTemplate.update(sql, userId, friendId);
-    }
-
-    @Override
-    public boolean haveFriends(Integer userId) {
-        String sql = "SELECT * " +
-                "FROM friends_user " +
-                "WHERE id_first_user = ?;";
-
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, userId);
-
-        return userRows.next();
-    }
-
-    @Override
-    public Set<User> getFriends(Integer userId) {
-        String sql = "SELECT * " +
-                "FROM users " +
-                "WHERE id IN " +
-                "(SELECT id_second_user " +
-                "FROM friends_user " +
-                "WHERE id_first_user = ?);";
-
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, userId);
-        Set<User> users = new HashSet<>();
-
-        while (userRows.next()) {
-            users.add(mapUser(userRows));
-        }
-        return users;
-    }
-
-    private User mapUser(SqlRowSet userRows) {
-        int idUser = userRows.getInt("id");
-        String nameUser = userRows.getString("name");
-        String emailUser = userRows.getString("email");
-        String loginUser = userRows.getString("login");
-        LocalDate birthdayUser = userRows.getDate("birthday").toLocalDate();
-        log.info("Найден пользователь: {} {}", idUser, nameUser);
-        return User.builder()
-                .id(idUser)
-                .name(nameUser)
-                .email(emailUser)
-                .login(loginUser)
-                .birthday(birthdayUser)
-                .build();
     }
 }

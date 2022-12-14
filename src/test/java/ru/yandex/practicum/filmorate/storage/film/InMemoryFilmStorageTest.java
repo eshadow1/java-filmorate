@@ -10,8 +10,8 @@ import ru.yandex.practicum.filmorate.storage.mpa.InMemoryMpaStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,7 +30,7 @@ class InMemoryFilmStorageTest {
         LocalDate localDate = LocalDate.of(1967, 3, 25);
         idFilm = 1;
         mpa = Mpa.builder().id(1).build();
-        List<Genre> genres = new ArrayList<>();
+        Set<Genre> genres = new HashSet<>();
         genres.add(Genre.builder().id(1).build());
         correctFilm = Film.builder()
                 .id(idFilm)

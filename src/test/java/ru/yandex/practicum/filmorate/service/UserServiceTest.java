@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.models.user.User;
+import ru.yandex.practicum.filmorate.storage.friends.InMemoryFriendsStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
@@ -20,7 +21,8 @@ class UserServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        userService = new UserService(new InMemoryUserStorage(new GeneratorId()));
+        var userStorage = new InMemoryUserStorage(new GeneratorId());
+        userService = new UserService(userStorage, new InMemoryFriendsStorage(userStorage));
         LocalDate localDate = LocalDate.of(2000, 3, 25);
         correctUser = User.builder()
                 .id(0)

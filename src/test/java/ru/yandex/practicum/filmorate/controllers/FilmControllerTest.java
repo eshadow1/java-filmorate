@@ -277,6 +277,72 @@ class FilmControllerTest {
     }
 
     @Test
+    void addLikeFilm() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectFilmDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            String endpoint_user = "/users";
+
+            String jsonCorrectUserDate = "{" +
+                    "  \"login\": \"dolore\"," +
+                    "  \"name\": \"Nick Name\"," +
+                    "  \"email\": \"mail@mail.ru\"," +
+                    "  \"birthday\": \"1946-08-20\"" +
+                    "}";
+
+            mockMvc.perform(post(endpoint_user)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(put(endpoint + "/1/like/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void removeLikeFilm() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectFilmDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            String endpoint_user = "/users";
+
+            String jsonCorrectUserDate = "{" +
+                    "  \"login\": \"dolore\"," +
+                    "  \"name\": \"Nick Name\"," +
+                    "  \"email\": \"mail@mail.ru\"," +
+                    "  \"birthday\": \"1946-08-20\"" +
+                    "}";
+
+            mockMvc.perform(post(endpoint_user)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(put(endpoint + "/1/like/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+            mockMvc.perform(put(endpoint + "/1/like/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     void addLikeUnknownFilm() {
         try {
             mockMvc.perform(put(endpoint + "/-1/like/1")

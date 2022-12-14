@@ -25,4 +25,10 @@ public class CustomErrorHandler {
     public Map<String, String> handleValidationException(final ValidationException error) {
         return Map.of("error", HttpStatus.BAD_REQUEST + ": " + error.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationException(final NotSupportException error) {
+        return Map.of("error", HttpStatus.BAD_REQUEST + ": " + error.getMessage());
+    }
 }

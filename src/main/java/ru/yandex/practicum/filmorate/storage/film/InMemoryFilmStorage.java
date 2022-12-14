@@ -36,7 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film add(Film film) {
         Mpa currentMpa = getMpaParameter(film.getMpa());
-        List<Genre> currentGenres = getGenreParameters(film.getGenres());
+        Set<Genre> currentGenres = getGenreParameters(film.getGenres());
 
         Film creatingFilm = film.toBuilder()
                 .id(generatorId.getId())
@@ -57,7 +57,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film update(Film film) {
         Mpa currentMpa = getMpaParameter(film.getMpa());
-        List<Genre> currentGenres = getGenreParameters(film.getGenres());
+        Set<Genre> currentGenres = getGenreParameters(film.getGenres());
 
         Film creatingFilm = film.toBuilder()
                 .genres(currentGenres)
@@ -109,15 +109,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
-    private List<Genre> getGenreParameters(List<Genre> genres) {
+    private Set<Genre> getGenreParameters(Set<Genre> genres) {
         if(genres == null || genres.isEmpty()) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
 
         return genres.stream()
-                .distinct()
                 .map(genre -> genreStorage.get(genre.getId()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private Mpa getMpaParameter(Mpa mpa) {

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.models.user.User;
+import ru.yandex.practicum.filmorate.storage.friends.FriendsStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Comparator;
@@ -13,10 +14,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendsStorage friendsStorage;
 
-
-    public UserService(@Qualifier("inDb") UserStorage userStorage) {
+    public UserService(@Qualifier("inDb") UserStorage userStorage,
+    @Qualifier("inDb") FriendsStorage friendsStorage) {
         this.userStorage = userStorage;
+        this.friendsStorage = friendsStorage;
     }
 
     public User addUser(User user) {
@@ -55,22 +58,22 @@ public class UserService {
         checkedUserContains(userId);
         checkedUserContains(friendId);
 
-        userStorage.addFriend(userId, friendId);
+        friendsStorage.addFriend(userId, friendId);
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
         checkedUserContains(userId);
         checkedUserContains(friendId);
 
-        if (userStorage.haveFriends(userId)) {
-            userStorage.removeFriend(userId, friendId);
+        if (friendsStorage.haveFriends(userId)) {
+            friendsStorage.removeFriend(userId, friendId);
         }
     }
 
     public List<User> getFriends(Integer userId) {
         checkedUserContains(userId);
 
-        return userStorage.getFriends(userId).stream()
+        return friendsStorage.getFriends(userId).stream()
                 .sorted(Comparator.comparingInt(User::getId))
                 .collect(Collectors.toList());
     }
@@ -79,11 +82,9 @@ public class UserService {
         checkedUserContains(userId);
         checkedUserContains(otherId);
 
-        var userFriends = userStorage.getFriends(userId);
-        var otherUserFriends = userStorage.getFriends(otherId);
+        var commonFriends = friendsStorage.getCommonFriends(userId, otherId);
 
-        return userFriends.stream()
-                .filter(otherUserFriends::contains)
+        return commonFriends.stream()
                 .sorted(Comparator.comparingInt(User::getId))
                 .collect(Collectors.toList());
     }
