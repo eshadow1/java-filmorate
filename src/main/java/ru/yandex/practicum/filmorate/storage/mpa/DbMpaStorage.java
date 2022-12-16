@@ -11,6 +11,8 @@ import ru.yandex.practicum.filmorate.models.mpa.Mpa;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.yandex.practicum.filmorate.mapping.MpaMapping.map;
+
 @Repository
 @Qualifier("inDb")
 public class DbMpaStorage implements MpaStorage {
@@ -24,16 +26,11 @@ public class DbMpaStorage implements MpaStorage {
     @Override
     public List<Mpa> getAll() {
         String sql = "select * from mpa;";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
+        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet(sql);
         List<Mpa> mpa = new ArrayList<>();
-        while (userRows.next()) {
-            int idInDb = userRows.getInt("id");
-            String nameInDb = userRows.getString("name");
-            log.info("Найден рейтинг MPA: {} {}", idInDb, nameInDb);
-            mpa.add(Mpa.builder()
-                    .id(idInDb)
-                    .name(nameInDb)
-                    .build());
+        while (mpaRows.next()) {
+            logInfoFindMpa(mpaRows);
+            mpa.add(map(mpaRows));
         }
         return mpa;
     }
@@ -43,16 +40,11 @@ public class DbMpaStorage implements MpaStorage {
         String sql = "SELECT * " +
                 "FROM mpa " +
                 "WHERE id = ?;";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, mpaId);
+        SqlRowSet mpaRow = jdbcTemplate.queryForRowSet(sql, mpaId);
 
-        if (userRows.next()) {
-            int idInDb = userRows.getInt("id");
-            String nameInDb = userRows.getString("name");
-            log.info("Найден рейтинг MPA: {} {}", idInDb, nameInDb);
-            return Mpa.builder()
-                    .id(idInDb)
-                    .name(nameInDb)
-                    .build();
+        if (mpaRow.next()) {
+            logInfoFindMpa(mpaRow);
+            return map(mpaRow);
         } else {
             log.info("Рейтинг MPA с идентификатором {} не найден.", mpaId);
             return null;
@@ -64,16 +56,20 @@ public class DbMpaStorage implements MpaStorage {
         String sql = "SELECT * " +
                 "FROM mpa " +
                 "WHERE id = ?;";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, mpaId);
+        SqlRowSet mpaRow = jdbcTemplate.queryForRowSet(sql, mpaId);
 
-        if (userRows.next()) {
-            int idInDb = userRows.getInt("id");
-            String nameInDb = userRows.getString("name");
-            log.info("Найден рейтинг MPA: {} {}", idInDb, nameInDb);
+        if (mpaRow.next()) {
+            logInfoFindMpa(mpaRow);
             return true;
         } else {
             log.info("Рейтинг MPA с идентификатором {} не найден.", mpaId);
             return false;
         }
+    }
+
+    private void logInfoFindMpa(SqlRowSet mpaRow) {
+        int idInDb = mpaRow.getInt("id");
+        String nameInDb = mpaRow.getString("name");
+        log.info("Найден рейтинг MPA: {} {}", idInDb, nameInDb);
     }
 }

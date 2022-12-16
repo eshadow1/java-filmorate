@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.friends;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,11 +12,12 @@ import ru.yandex.practicum.filmorate.models.user.User;
 import java.util.HashSet;
 import java.util.Set;
 
-import static ru.yandex.practicum.filmorate.mapping.Mapping.mapUser;
+import static ru.yandex.practicum.filmorate.mapping.UserMapping.map;
 
 @Repository
 @Qualifier("inDb")
 public class DbFriendsStorage implements FriendsStorage {
+    private final Logger log = LoggerFactory.getLogger(DbFriendsStorage.class);
     private final JdbcTemplate jdbcTemplate;
 
     public DbFriendsStorage(JdbcTemplate jdbcTemplate) {
@@ -27,6 +30,7 @@ public class DbFriendsStorage implements FriendsStorage {
         String sql = "INSERT INTO friends_user (id_first_user, id_second_user) " +
                 "VALUES (?, ?);";
         jdbcTemplate.update(sql, userId, friendId);
+        log.info("Добавлен друг с ID {} у пользователя с ID {}.", friendId, userId);
         return true;
     }
 
@@ -38,6 +42,7 @@ public class DbFriendsStorage implements FriendsStorage {
                 "and id_second_user = ?;";
 
         jdbcTemplate.update(sql, userId, friendId);
+        log.info("Удален друг с ID {} у пользователя с ID {}.", friendId, userId);
     }
 
     @Override
@@ -63,8 +68,9 @@ public class DbFriendsStorage implements FriendsStorage {
         Set<User> users = new HashSet<>();
 
         while (userRows.next()) {
-            users.add(mapUser(userRows));
+            users.add(map(userRows));
         }
+        log.info("Количество друзей у пользователя с ID {}: {}.", userId, users.size());
         return users;
     }
 
@@ -84,8 +90,9 @@ public class DbFriendsStorage implements FriendsStorage {
         Set<User> users = new HashSet<>();
 
         while (userRows.next()) {
-            users.add(mapUser(userRows));
+            users.add(map(userRows));
         }
+        log.info("Количество общих друзей у пользователей {} и {}: {}.", firstUserId, secondUserId, users.size());
         return users;
     }
 
@@ -98,6 +105,7 @@ public class DbFriendsStorage implements FriendsStorage {
                 "WHERE id = ?;";
 
         jdbcTemplate.update(sql, userId.getId());
+        log.info("Удален пользователь с ID {} вместе со списком друзей.", userId);
     }
 
 }

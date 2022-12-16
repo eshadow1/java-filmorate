@@ -9,11 +9,10 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.models.user.User;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.yandex.practicum.filmorate.mapping.Mapping.mapUser;
+import static ru.yandex.practicum.filmorate.mapping.UserMapping.map;
 
 @Repository
 @Qualifier("inDb")
@@ -46,7 +45,7 @@ public class DbUserStorage implements UserStorage {
                 user.getLogin(), user.getName(), user.getBirthday());
 
         if (userRows.next()) {
-            return mapUser(userRows);
+            return map(userRows);
         }
         return null;
     }
@@ -85,19 +84,8 @@ public class DbUserStorage implements UserStorage {
         List<User> users = new ArrayList<>();
 
         while (userRows.next()) {
-            int idUser = userRows.getInt("id");
-            String nameUser = userRows.getString("name");
-            String emailUser = userRows.getString("email");
-            String loginUser = userRows.getString("login");
-            LocalDate birthdayUser = userRows.getDate("birthday").toLocalDate();
-            log.info("Найден пользователь: {} {}", idUser, nameUser);
-            users.add(User.builder()
-                    .id(idUser)
-                    .name(nameUser)
-                    .email(emailUser)
-                    .login(loginUser)
-                    .birthday(birthdayUser)
-                    .build());
+            logInfoFindUser(userRows);
+            users.add(map(userRows));
         }
         return users;
     }
@@ -108,19 +96,8 @@ public class DbUserStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, userId);
 
         if (userRows.next()) {
-            int idUser = userRows.getInt("id");
-            String nameUser = userRows.getString("name");
-            String emailUser = userRows.getString("email");
-            String loginUser = userRows.getString("login");
-            LocalDate birthdayUser = userRows.getDate("birthday").toLocalDate();
-            log.info("Найден пользователь: {} {}", idUser, nameUser);
-            return User.builder()
-                    .id(idUser)
-                    .name(nameUser)
-                    .email(emailUser)
-                    .login(loginUser)
-                    .birthday(birthdayUser)
-                    .build();
+            logInfoFindUser(userRows);
+            return map(userRows);
         } else {
             log.info("Пользователь с идентификатором {} не найден.", userId);
             return null;
@@ -133,13 +110,17 @@ public class DbUserStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, userId);
 
         if (userRows.next()) {
-            int idUser = userRows.getInt("id");
-            String nameUser = userRows.getString("name");
-            log.info("Найден пользователь: {} {}", idUser, nameUser);
+            logInfoFindUser(userRows);
             return true;
         } else {
             log.info("Пользователь с идентификатором {} не найден.", userId);
             return false;
         }
+    }
+
+    private void logInfoFindUser(SqlRowSet userRows) {
+        int idUser = userRows.getInt("id");
+        String nameUser = userRows.getString("name");
+        log.info("Найден пользователь: {} {}", idUser, nameUser);
     }
 }

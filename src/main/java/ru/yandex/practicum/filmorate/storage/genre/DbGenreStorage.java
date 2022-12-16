@@ -11,6 +11,8 @@ import ru.yandex.practicum.filmorate.models.genre.Genre;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.yandex.practicum.filmorate.mapping.GenreMapping.map;
+
 @Repository
 @Qualifier("inDb")
 public class DbGenreStorage implements GenreStorage {
@@ -24,16 +26,11 @@ public class DbGenreStorage implements GenreStorage {
     @Override
     public List<Genre> getAll() {
         String sql = "SELECT * FROM genre;";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
+        SqlRowSet genreRow = jdbcTemplate.queryForRowSet(sql);
         List<Genre> genres = new ArrayList<>();
-        while (userRows.next()) {
-            int idInDb = userRows.getInt("id");
-            String nameInDb = userRows.getString("name");
-            log.info("Найден жанр: {} {}", idInDb, nameInDb);
-            genres.add(Genre.builder()
-                    .id(idInDb)
-                    .name(nameInDb)
-                    .build());
+        while (genreRow.next()) {
+            logInfoFindGenre(genreRow);
+            genres.add(map(genreRow));
         }
         return genres;
     }
@@ -43,16 +40,11 @@ public class DbGenreStorage implements GenreStorage {
         String sql = "SELECT * " +
                 "FROM genre " +
                 "WHERE id = ?;";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, genreId);
+        SqlRowSet genreRow = jdbcTemplate.queryForRowSet(sql, genreId);
 
-        if (userRows.next()) {
-            int idInDb = userRows.getInt("id");
-            String nameInDb = userRows.getString("name");
-            log.info("Найден жанр: {} {}", idInDb, nameInDb);
-            return Genre.builder()
-                    .id(idInDb)
-                    .name(nameInDb)
-                    .build();
+        if (genreRow.next()) {
+            logInfoFindGenre(genreRow);
+            return map(genreRow);
         } else {
             log.info("Жанр с идентификатором {} не найден.", genreId);
             return null;
@@ -64,16 +56,20 @@ public class DbGenreStorage implements GenreStorage {
         String sql = "SELECT * " +
                 "FROM genre " +
                 "WHERE id = ?;";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, genreId);
+        SqlRowSet genreRow = jdbcTemplate.queryForRowSet(sql, genreId);
 
-        if (userRows.next()) {
-            int idInDb = userRows.getInt("id");
-            String nameInDb = userRows.getString("name");
-            log.info("Найден жанр: {} {}", idInDb, nameInDb);
+        if (genreRow.next()) {
+            logInfoFindGenre(genreRow);
             return true;
         } else {
             log.info("Жанр с идентификатором {} не найден.", genreId);
             return false;
         }
+    }
+
+    private void logInfoFindGenre(SqlRowSet genreRow) {
+        int idInDb = genreRow.getInt("id");
+        String nameInDb = genreRow.getString("name");
+        log.info("Найден жанр: {} {}", idInDb, nameInDb);
     }
 }
