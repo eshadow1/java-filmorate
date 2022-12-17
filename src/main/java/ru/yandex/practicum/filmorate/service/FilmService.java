@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.models.film.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,29 +16,29 @@ import java.util.stream.Collectors;
 public class FilmService {
     private static final LocalDate DATE_EARLY = LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
-    private final GeneratorId generatorId;
+
     private final UserStorage userStorage;
 
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, GeneratorId generatorId) {
+    public FilmService(@Qualifier("inDb") FilmStorage filmStorage,
+                       @Qualifier("inDb") UserStorage userStorage) {
         this.filmStorage = filmStorage;
-        this.generatorId = generatorId;
         this.userStorage = userStorage;
     }
 
     public Film addFilm(Film film) {
         validateReleaseDateFilm(film.getReleaseDate());
-        Film creatingFilm = film.toBuilder().id(generatorId.getId()).build();
-        return filmStorage.add(creatingFilm);
+
+        return filmStorage.add(film);
     }
 
     public boolean contains(int film) {
         return filmStorage.contains(film);
     }
 
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         checkedFilmContains(film.getId());
 
-        filmStorage.update(film);
+        return filmStorage.update(film);
     }
 
     public List<Film> getAllFilms() {

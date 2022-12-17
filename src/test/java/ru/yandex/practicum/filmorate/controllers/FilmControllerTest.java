@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -15,8 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmControllerTest {
     private static String jsonCorrectFilmDate;
+    private static String jsonCorrectFilmWithGenreDate;
     private static String endpoint;
     @Autowired
     private MockMvc mockMvc;
@@ -29,7 +34,17 @@ class FilmControllerTest {
                 "\"name\": \"nisi eiusmod\"," +
                 "\"description\": \"adipisicing\"," +
                 "\"releaseDate\": \"1967-03-25\"," +
-                "\"duration\": 100" +
+                "\"duration\": 100," +
+                "\"mpa\": { \"id\": 1}" +
+                "}";
+
+        jsonCorrectFilmWithGenreDate = "{" +
+                "\"name\": \"nisi eiusmod\"," +
+                "\"description\": \"adipisicing\"," +
+                "\"releaseDate\": \"1967-03-25\"," +
+                "\"duration\": 100," +
+                "\"mpa\": { \"id\": 1}," +
+                "\"genres\": [{ \"id\": 1}]" +
                 "}";
     }
 
@@ -46,13 +61,26 @@ class FilmControllerTest {
     }
 
     @Test
+    void addCorrectFilmWithGenre() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectFilmWithGenreDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     void addFailDateFilm() {
         try {
             String jsonFailFilmDate = "{" +
                     "  \"name\": \"Name\"," +
                     "  \"description\": \"Description\"," +
                     "  \"releaseDate\": \"1890-03-25\"," +
-                    "  \"duration\": 200" +
+                    "  \"duration\": 200," +
+                    "  \"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonFailFilmDate)
@@ -71,7 +99,8 @@ class FilmControllerTest {
                     "  \"test\": \"Name\"," +
                     "  \"second\": \"Description\"," +
                     "  \"release\": \"1990-03-25\"," +
-                    "  \"durations\": 200" +
+                    "  \"durations\": 200," +
+                    "  \"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonIncorrectFilmDate)
@@ -89,7 +118,8 @@ class FilmControllerTest {
                     "\"name\": \"\"," +
                     "\"description\": \"Description\"," +
                     "\"releaseDate\": \"1900-03-25\"," +
-                    "\"duration\": 200\n" +
+                    "\"duration\": 200," +
+                    "\"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonUser)
@@ -109,7 +139,8 @@ class FilmControllerTest {
                     "разыскать господина Огюста Куглова, который задолжал им деньги, а именно 20 миллионов. о Куглов,  " +
                     "который за время «своего отсутствия», стал кандидатом Коломбани.\"," +
                     "\"releaseDate\": \"1900-03-25\"," +
-                    "\"duration\": 200" +
+                    "\"duration\": 200," +
+                    "\"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonUser)
@@ -127,7 +158,8 @@ class FilmControllerTest {
                     "  \"name\": \"Name\",\n" +
                     "  \"description\": \"Descrition\",\n" +
                     "  \"releaseDate\": \"1980-03-25\",\n" +
-                    "  \"duration\": -200\n" +
+                    "  \"duration\": -200,\n" +
+                    "  \"mpa\": { \"id\": 1}" +
                     "}";
             mockMvc.perform(post(endpoint)
                     .content(jsonUser)
@@ -151,7 +183,8 @@ class FilmControllerTest {
                     "\"name\": \"nisi eiusmod\"," +
                     "\"description\": \"adipisicingUpdate\"," +
                     "\"releaseDate\": \"1967-03-25\"," +
-                    "\"duration\": 100" +
+                    "\"duration\": 100," +
+                    "\"mpa\": { \"id\": 1}" +
                     "}";
 
             mockMvc.perform(put(endpoint)
@@ -173,11 +206,12 @@ class FilmControllerTest {
             ).andExpect(status().isCreated());
 
             String jsonUpdateFilm = "{" +
-                    "\"id\": 2," +
+                    "\"id\": 9999," +
                     "\"name\": \"nisi eiusmod\"," +
                     "\"description\": \"adipisicingUpdate\"," +
                     "\"releaseDate\": \"1967-03-25\"," +
-                    "\"duration\": 100" +
+                    "\"duration\": 100," +
+                    "\"mpa\": { \"id\": 1}" +
                     "}";
 
             mockMvc.perform(put(endpoint)
@@ -234,6 +268,72 @@ class FilmControllerTest {
     void getPopularFilms() {
         try {
             mockMvc.perform(get(endpoint+"/popular")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void addLikeFilm() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectFilmDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            String endpoint_user = "/users";
+
+            String jsonCorrectUserDate = "{" +
+                    "  \"login\": \"dolore\"," +
+                    "  \"name\": \"Nick Name\"," +
+                    "  \"email\": \"mail@mail.ru\"," +
+                    "  \"birthday\": \"1946-08-20\"" +
+                    "}";
+
+            mockMvc.perform(post(endpoint_user)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(put(endpoint + "/1/like/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void removeLikeFilm() {
+        try {
+            mockMvc.perform(post(endpoint)
+                    .content(jsonCorrectFilmDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            String endpoint_user = "/users";
+
+            String jsonCorrectUserDate = "{" +
+                    "  \"login\": \"dolore\"," +
+                    "  \"name\": \"Nick Name\"," +
+                    "  \"email\": \"mail@mail.ru\"," +
+                    "  \"birthday\": \"1946-08-20\"" +
+                    "}";
+
+            mockMvc.perform(post(endpoint_user)
+                    .content(jsonCorrectUserDate)
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isCreated());
+
+            mockMvc.perform(put(endpoint + "/1/like/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+            ).andExpect(status().isOk());
+
+            mockMvc.perform(put(endpoint + "/1/like/1")
                     .contentType(MediaType.APPLICATION_JSON)
             ).andExpect(status().isOk());
 

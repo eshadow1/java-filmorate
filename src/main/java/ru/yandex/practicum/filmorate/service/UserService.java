@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
-import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.models.user.User;
+import ru.yandex.practicum.filmorate.storage.friends.FriendsStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.util.Comparator;
 import java.util.List;
@@ -13,16 +14,17 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserStorage userStorage;
-    private final GeneratorId generatorId;
+    private final FriendsStorage friendsStorage;
 
-    public UserService(UserStorage userStorage, GeneratorId generatorId) {
+    public UserService(@Qualifier("inDb") UserStorage userStorage,
+    @Qualifier("inDb") FriendsStorage friendsStorage) {
         this.userStorage = userStorage;
-        this.generatorId = generatorId;
+        this.friendsStorage = friendsStorage;
     }
 
     public User addUser(User user) {
         String name = getCorrectName(user);
-        User creatingUser = user.toBuilder().id(generatorId.getId()).name(name).build();
+        User creatingUser = user.toBuilder().name(name).build();
         return userStorage.add(creatingUser);
     }
 
@@ -56,27 +58,22 @@ public class UserService {
         checkedUserContains(userId);
         checkedUserContains(friendId);
 
-        userStorage.addFriend(userId, friendId);
-        userStorage.addFriend(friendId, userId);
+        friendsStorage.addFriend(userId, friendId);
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
         checkedUserContains(userId);
         checkedUserContains(friendId);
 
-        if (userStorage.haveFriends(userId)) {
-            userStorage.removeFriend(userId, friendId);
-        }
-
-        if (userStorage.haveFriends(friendId)) {
-            userStorage.removeFriend(friendId, userId);
+        if (friendsStorage.haveFriends(userId)) {
+            friendsStorage.removeFriend(userId, friendId);
         }
     }
 
     public List<User> getFriends(Integer userId) {
         checkedUserContains(userId);
 
-        return userStorage.getFriends(userId).stream()
+        return friendsStorage.getFriends(userId).stream()
                 .sorted(Comparator.comparingInt(User::getId))
                 .collect(Collectors.toList());
     }
@@ -85,11 +82,9 @@ public class UserService {
         checkedUserContains(userId);
         checkedUserContains(otherId);
 
-        var userFriends = userStorage.getFriends(userId);
-        var otherUserFriends = userStorage.getFriends(otherId);
+        var commonFriends = friendsStorage.getCommonFriends(userId, otherId);
 
-        return userFriends.stream()
-                .filter(otherUserFriends::contains)
+        return commonFriends.stream()
                 .sorted(Comparator.comparingInt(User::getId))
                 .collect(Collectors.toList());
     }

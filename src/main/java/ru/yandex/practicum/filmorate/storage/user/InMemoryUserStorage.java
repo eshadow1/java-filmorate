@@ -1,31 +1,32 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.models.User;
-import ru.yandex.practicum.filmorate.models.Users;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.models.user.User;
+import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Component
+@Repository
+@Qualifier("inMemory")
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users;
-    private final Map<Integer, Set<Integer>> usersFriends;
+    private final GeneratorId generatorId;
 
-    public InMemoryUserStorage() {
+    public InMemoryUserStorage(GeneratorId generatorId) {
         this.users = new HashMap<>();
-        this.usersFriends = new HashMap<>();
+        this.generatorId = generatorId;
     }
 
     @Override
     public User add(User user) {
-        users.put(user.getId(), user);
-        return user;
+        User creatingUser = user.toBuilder().id(generatorId.getId()).build();
+        users.put(creatingUser.getId(), creatingUser);
+        return creatingUser;
     }
 
     @Override
     public User remove(User user) {
-        usersFriends.remove(user.getId());
         return users.remove(user.getId());
     }
 
@@ -49,40 +50,4 @@ public class InMemoryUserStorage implements UserStorage {
         return users.containsKey(userId);
     }
 
-    @Override
-    public boolean addFriend(Integer userId, Integer friendId) {
-        if (!usersFriends.containsKey(userId)) {
-            usersFriends.put(userId, new HashSet<>());
-        }
-        usersFriends.get(userId).add(friendId);
-        return true;
-    }
-
-    @Override
-    public void removeFriend(Integer userId, Integer friendId) {
-        usersFriends.get(userId).remove(friendId);
-    }
-
-    @Override
-    public boolean haveFriends(Integer userId) {
-        var userFriends = usersFriends.get(userId);
-
-        if (userFriends == null) {
-            return false;
-        }
-        return !userFriends.isEmpty();
-    }
-
-    @Override
-    public Set<User> getFriends(Integer userId) {
-        var userFriends = usersFriends.get(userId);
-
-        if (userFriends == null) {
-            return Collections.emptySet();
-        }
-
-        return userFriends.stream()
-                .map(id -> users.containsKey(id) ? users.get(id) : Users.getRemoveUser(id))
-                .collect(Collectors.toSet());
-    }
 }

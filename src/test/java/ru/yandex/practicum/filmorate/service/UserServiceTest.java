@@ -3,7 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ContainsException;
-import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.models.user.User;
+import ru.yandex.practicum.filmorate.storage.friends.InMemoryFriendsStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.utils.GeneratorId;
 
@@ -20,7 +21,8 @@ class UserServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        userService = new UserService(new InMemoryUserStorage(), new GeneratorId());
+        var userStorage = new InMemoryUserStorage(new GeneratorId());
+        userService = new UserService(userStorage, new InMemoryFriendsStorage(userStorage));
         LocalDate localDate = LocalDate.of(2000, 3, 25);
         correctUser = User.builder()
                 .id(0)
@@ -118,7 +120,7 @@ class UserServiceTest {
         userService.addUser(correctUser2);
         userService.addFriend(1, 2);
         assertEquals(1, userService.getFriends(1).size());
-        assertEquals(1, userService.getFriends(2).size());
+        assertEquals(0, userService.getFriends(2).size());
     }
 
     @Test
@@ -179,9 +181,9 @@ class UserServiceTest {
         userService.addUser(correctUser);
         userService.addUser(correctUser2);
         userService.addFriend(1, 2);
-        userService.removeFriend(2, 1);
+        assertEquals(1, userService.getFriends(1).size());
+        userService.removeFriend(1, 2);
         assertEquals(0, userService.getFriends(1).size());
-        assertEquals(0, userService.getFriends(2).size());
     }
 
     @Test
